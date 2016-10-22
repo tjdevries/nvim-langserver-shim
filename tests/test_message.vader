@@ -1,0 +1,1 @@
+# nvim -N -u NONE -c "set rtp+=~/.vim/plugged/langserver,~/.vim/plugged/vader.vim/" -c "runtime! plugin/langserver.vim" -c "Vader ~/.vim/plugged/langserver/tests/test_message.vader"

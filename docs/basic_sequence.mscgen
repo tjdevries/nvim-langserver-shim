@@ -1,0 +1,23 @@
+msc {
+    width = "1200";
+
+    N [label="Neovim"],
+    C [label="Neovim client"],
+    S [label="Server (external)"];
+
+
+    N->C [label=":call StartLangServer"];
+    N abox N [label="Open a text document", textbgcolor="white", textcolor="black"];
+    N->C [label=":call langserver#didOpenTextDocument"];
+    C->S [label="send textDocument/didOpen"];
+    ...;
+
+    N abox N [label="Edit a text document", textbgcolor="white", textcolor="black"];
+    N->C [label=":call langserver#didChangeTextDocument"];
+    C->S [label="send textDocument/didChange"];
+    S abox S [label="Analyze new document", textbgcolor="white", textcolor="black"];
+    S->C [label="send textDocument/publishDiagnostics"];
+    C abox C [label="Convert diagnostics to nvim commands", textbgcolor="white", textcolor="black"];
+    C->N [label=":call langserver#updateDiagnostics"];
+    ...;
+}
