@@ -1,0 +1,24 @@
+msc {
+    width = "1200";
+
+    N [label="Neovim"],
+    P [label="Neovim Plugin"],
+    R [label="Neovim Remote Plugin"],
+    S [label="Server (external)"];
+
+    N note S [label="Current implementation of remote plugin is in Node. Could be other languages in the future.", textbgcolor="white", textcolor="black"];
+
+
+    N->P [label=":call StartLangServer <args>"];
+    P abox P [label="Starts / Connects langserver process", textbgcolor="white", textcolor="black"];
+    ...;
+
+    N abox N [label="Open a text document", textbgcolor="white", textcolor="black"];
+    N->P [label=":call langserver#didOpenTextDocument"];
+    P->R [label="Construct textDocument/didOpen from call"];
+    R abox R [label="Use vscode-jsonrpc to construct the correct message for the server", textbgcolor="white", textcolor="black"];
+    R->S [label="Send: textDocument/didOpen"];
+    ...;
+
+}
+    
