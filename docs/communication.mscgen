@@ -20,5 +20,7 @@ msc {
     R->S [label="Send: textDocument/didOpen"];
     ...;
 
+    // TODO: Detail the process for going to a definition.
+
 }
     
