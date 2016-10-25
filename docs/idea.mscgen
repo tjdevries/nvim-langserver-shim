@@ -1,0 +1,25 @@
+msc {
+    width = "1200";
+
+    N [label="Neovim"],
+    P [label="Neovim Plugin"],
+    R [label="Neovim Remote Plugin"],
+    S [label="Server (external)"];
+
+
+    P box R [label="Startup and connection of server already complete", textbgcolor="black", textcolor="white"];
+    N abox N [label="User initiates action / commands", textbgcolor="white", textcolor="black"];
+    N->P [label="Trigger command / autocommand"];
+    P abox P [label="Create message dictionary", textbgcolor="white", textcolor="black"];
+    P->R [label="Send message dictionary"];
+    R abox R [label="Turn message dictionary into LSP message", textbgcolor="white", textcolor="black"];
+    R->S [label="Send LSP message to server"];
+    S abox S [label="Process message / Create response", textbgcolor="white", textcolor="black"];
+    S->R [label="Send LSP response"];
+    R abox R [label="Convert response into neovim dictionary", textbgcolor="white", textcolor="black"];
+    R->P [label="Send vim dictionary"];
+    P abox P [label="Convert dictionary into neovim actions", textbgcolor="white", textcolor="black"];
+    P->N [label="Send actions"];
+    N abox N [label="User experiences happiness", textbgcolor="white", textcolor="black"];
+}
+    
