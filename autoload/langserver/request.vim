@@ -13,10 +13,10 @@ function! langserver#request#goToDefinition(id, ...) abort
 
   return langserver#message#content(
         \ a:id,
-        \ 'textDocument/definition'
+        \ 'textDocument/definition',
         \ {
           \ 'textDocument': "TODO",
           \ 'position': l:position,
-        \ }
+        \ },
         \ )
 endfunction
