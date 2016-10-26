@@ -122,63 +122,62 @@ function! langserver#util#get_workspace_edit(uri, edit) abort
         \ }
 endfunction
 
-" TextDocumentIdentifier
-
+""
 " Text documents are identified using a URI. On the protocol level, URIs are passed as strings. The corresponding JSON structure looks like this:
+"
+" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#textdocumentidentifier
+function! langserver#util#get_text_document_identifier() abort
+  " TODO: I'm not sure if I'll be looking to get other items or what from this
+  " function
+  return {'uri': expand('%')}
+endfunction
 
-" interface TextDocumentIdentifier {
-"     /**
-"      * The text document's URI.
-"      */
-"     uri: string;
-" }
-" TextDocumentItem
-
-" New: An item to transfer a text document from the client to the server.
-" interface TextDocumentItem {
-"     /**
-"      * The text document's URI.
-"      */
-"     uri: string;
-
-"     /**
-"      * The text document's language identifier.
-"      */
-"     languageId: string;
-
-"     /**
-"      * The version number of this document (it will strictly increase after each
-"      * change, including undo/redo).
-"      */
-"     version: number;
-
-"     /**
-"      * The content of the opened text document.
-"      */
-"     text: string;
-" }
-" VersionedTextDocumentIdentifier
-
+""
 " New: An identifier to denote a specific version of a text document.
-" interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
-"     /**
-"      * The version number of this document.
-"      */
-"     version: number;
-" }
-" TextDocumentPositionParams
+"
+" @param version (Optional[int]): If specified, refer to this version
+function! langserver#util#get_versioned_text_document_identifier(...) abort
+  let l:return_dict = langserver#util#get_text_document_identifier()
 
-" Changed: Was TextDocumentPosition in 1.0 with inlined parameters
+  if a:0 > 0
+    let l:version = a:1
+  else
+    " Add the version number to the text document identifier
+    " And don't increment the count for the version
+    let l:version = langserver#version#get_version(l:return_dict['uri'], v:false)
+  endif
+
+  call extend(l:return_dict, {'version': l:version})
+
+  return l:return_dict
+endfunction
+
+""
+" An item to transfer a text document from the client to the server.
+"
+" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#textdocumentitem
+function! langserver#util#get_text_document_item() abort
+  let l:temp_uri = expand('%')
+
+" /**
+"  * The content of the opened text document.
+"  */
+"  TODO: Get the text as required
+  let l:text = 'TODO'
+  return {
+        \ 'uri': l:temp_uri,
+        \ 'languageId': &filetype,
+        \ 'version': langserver#version#get_version(l:temp_uri),
+        \ 'text': l:text,
+        \ }
+endfunction
+
+""
 " A parameter literal used in requests to pass a text document and a position inside that document.
-
-" interface TextDocumentPositionParams {
-"     /**
-"      * The text document.
-"      */
-"     textDocument: TextDocumentIdentifier;
-
-"     /**
-"      * The position inside the text document.
-"      */
-"     position: Position;
-" }
+"
+function! langserver#util#get_text_document_position_params() abort
+  return {
+        \ 'textDocument': langserver#util#get_text_document_identifier(),
+        \ 'position': langserver#util#get_position(),
+        \ }
+endfunction
