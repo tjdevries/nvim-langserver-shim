@@ -4,7 +4,7 @@ let s:uri_version = {}
 " Get the current version number and then increment it by one.
 "
 " @param uri (string): The uri of the file
-" @param increment (bool): If true, increment the version
+" @param increment (Optional[bool]): If true, increment the version
 function! langserver#version#get_version(uri, ...) abort
   if a:0 > 0
     let l:increment = a:1
