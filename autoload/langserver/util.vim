@@ -163,19 +163,14 @@ endfunction
 " An item to transfer a text document from the client to the server.
 "
 " Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#textdocumentitem
-function! langserver#util#get_text_document_item() abort
-  let l:temp_uri = expand('%')
+function! langserver#util#get_text_document_item(name, filename) abort
+  let l:temp_uri = langserver#util#get_uri(a:name, a:filename)
 
-" /**
-"  * The content of the opened text document.
-"  */
-"  TODO: Get the text as required
-  let l:text = 'TODO'
   return {
         \ 'uri': l:temp_uri,
         \ 'languageId': &filetype,
         \ 'version': langserver#version#get_version(l:temp_uri),
-        \ 'text': l:text,
+        \ 'text': langserver#util#get_file_contents(a:filename),
         \ }
 endfunction
 
@@ -187,4 +182,10 @@ function! langserver#util#get_text_document_position_params() abort
         \ 'textDocument': langserver#util#get_text_document_identifier(),
         \ 'position': langserver#util#get_position(),
         \ }
+endfunction
+
+""
+" Read the contents into a variable
+function! langserver#util#get_file_contents(filename) abort
+  return join(readfile(a:filename), "\n")
 endfunction

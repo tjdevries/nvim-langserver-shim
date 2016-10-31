@@ -1,7 +1,7 @@
 {
     "name": "nvim-langserver-shim",
     "description": "Language server implementation for neovim",
-    "version": "0.1",
+    "version": "0.1.0",
     "author": "TJ DeVries",
     "license": "MIT",
     "repository": {
@@ -21,6 +21,7 @@
     },
 	"dependencies": {
 		"vscode-jsonrpc": "^3.0.0-alpha.2",
+        "typescript": "^2.0.3",
 		"vscode-languageserver-types": "^2.0.0-alpha.1"
 	},
     "scripts": {}

@@ -16,3 +16,10 @@ function! langserver#message#content(id, method, params) abort
         \ 'params': a:param,
         \ }
 endfunction
+
+""
+" Message sender
+"
+function! langserver#message#send(name, header, content) abort
+  " Call the remote plugin to send this
+endfunction
