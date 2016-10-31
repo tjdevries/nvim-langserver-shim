@@ -1,0 +1,59 @@
+  " call LangSeverStart()
+  " call langserver#initialize#request()
+  call langserver#initialize#response(
+      \ 'vader-test',
+      \ {
+        \ 'textDocumentSync': 1,
+        \ 'definitionProvider': v:true,
+      \ }
+      \ )
+
+    Log "Capbilities..."
+    Log string(g:langserver_capabilities)
+
+
+================================================================================
+
+
+Given vim (Set up go to):
+  " Not the first line
+  let g:goto_test_var = 'hello'
+
+  " This is just a comment
+  " This is another comment
+
+  call string(g:goto_test_var)
+
+Do (move to the variable):
+  /g:goto_test_var\<Enter>
+  n
+
+Execute (Test GoTo):
+  " This is just a test to see what we should do when getting
+  " a response from  a server
+
+  " We would send something like this...
+  " call langserver#goto#request(doc, pos)
+  AssertEqual 7, line('.'), 'Original line'
+  call langserver#goto#response('vader-test', {
+      \ 'uri': 'file://' . expand('%'),
+      \ 'range': {
+        \ 'start': {
+          \ 'line': 1,
+          \ 'character': 0,
+        \ },
+        \ 'end': {
+          \ 'line': 1,
+          \ 'character': 10,
+        \ },
+      \ }
+      \ })
+  norm! dd
+
+Expect (The original line to be deleted):
+  " Not the first line
+
+  " This is just a comment
+  " This is another comment
+
+  call string(g:goto_test_var)

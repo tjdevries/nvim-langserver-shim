@@ -51,7 +51,7 @@ function! langserver#initialize#response(name, response) abort
     call langserver#capabilities#set_completion_provider(a:name, l:complete_opt_resolve, l:complete_opt_trigger)
   endif
 
-  if has_key(a:respone, 'signatureHelpProvider')
+  if has_key(a:response, 'signatureHelpProvider')
     let l:signature_help_resolve = get(a:response['signatureHelpProvider'], 'resolveProvider', v:false)
     call langserver#capabilities#set_signature_help_provider(a:name, l:signature_help_resolve)
   endif

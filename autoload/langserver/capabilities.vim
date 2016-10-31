@@ -13,7 +13,25 @@ let s:TextDocumentSyncKind = {
 
 " In case this has been set somehow. Not sure if I want to do it like this,
 " but it should guard against anything overwriting this
-let g:langserver_capabilities = get(g, 'langserver_capabilities', {})
+let g:langserver_capabilities = get(g:, 'langserver_capabilities', {})
+
+function! langserver#capabilities#check(name, key_1, ...)
+  if !has_key(g:langserver_capabilities, a:name)
+    echom 'Language server {' . a:name . '} has not been initialized'
+    return v:false
+  endif
+
+  if !has_key(g:langserver_capabilities[a:name], a:key_1)
+    echom 'Language server {' a:name . '} does not have key {' . a:key_1 . '}'
+    return v:false
+  endif
+
+  if a:0 > 0
+    " TODO:
+  else
+    return g:langserver_capabilities[a:name][a:key_1]
+  endif
+endfunction
 
 ""
 " Makes sure that the dictionary is prepared to record the capabilities of
@@ -62,7 +80,7 @@ function! langserver#capabilities#set_hover_provider(name, hover_provider) abort
   let l:config_dict = s:prepare_capabiilties(a:name)
 
   let l:config_dict['hoverProvider'] = a:hover_provider
-endif
+endfunction
 
 ""
 " @param resolve_provider (bool): Provide support for resolves

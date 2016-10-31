@@ -9,6 +9,13 @@ let s:diagnostic_severity = {
 
 " Basic Json Structures
 "
+
+""
+" Get a uri from a filename
+function! langserver#util#get_uri(name, filename)
+  return 'file://' . a:filename
+endfunction
+
 ""
 " Get a position dictinoary like the position structure
 "
