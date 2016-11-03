@@ -1,6 +1,15 @@
 " TODO: Add this.
 " TODO: Decide whether to create request in command or here
-function! langserver#goto#request() abort
+function! langserver#goto#request(name) abort
+
+  return langserver#message#content(
+        \ langserver#version#get_id(),
+        \ 'textDocument/definition',
+        \ {
+          \ 'textDocument': langserver#util#get_text_document_identifier(a:name),
+          \ 'position': langserver#util#get_position(),
+        \ }
+        \)
 endfunction
 
 function! s:goto_defintion(name, uri, range_dict, options)

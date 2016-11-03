@@ -13,7 +13,7 @@ function! langserver#message#content(id, method, params) abort
         \ 'jsonrpc': g:langserver_configuration['json_rpc_version'],
         \ 'id': a:id,
         \ 'method': a:method,
-        \ 'params': a:param,
+        \ 'params': a:params,
         \ }
 endfunction
 
@@ -22,4 +22,5 @@ endfunction
 "
 function! langserver#message#send(name, header, content) abort
   " Call the remote plugin to send this
+  return langserver#message#content(0, a:header, a:content)
 endfunction

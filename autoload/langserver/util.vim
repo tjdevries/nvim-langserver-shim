@@ -133,10 +133,10 @@ endfunction
 " Text documents are identified using a URI. On the protocol level, URIs are passed as strings. The corresponding JSON structure looks like this:
 "
 " Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#textdocumentidentifier
-function! langserver#util#get_text_document_identifier() abort
+function! langserver#util#get_text_document_identifier(name) abort
   " TODO: I'm not sure if I'll be looking to get other items or what from this
   " function
-  return {'uri': expand('%')}
+  return {'uri': langserver#util#get_uri(a:name, expand('%'))}
 endfunction
 
 ""

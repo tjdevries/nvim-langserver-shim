@@ -1,4 +1,5 @@
 let s:uri_version = {}
+let s:id_number = 0
 
 ""
 " Get the current version number and then increment it by one.
@@ -25,4 +26,9 @@ function! langserver#version#get_version(uri, ...) abort
   endif
 
   return l:return_version
+endfunction
+
+function! langserver#version#get_id() abort
+  let s:id_number = s:id_number + 1
+  return s:id_number
 endfunction

@@ -10,7 +10,7 @@ function! langserver#didOpenTextDocument(filename) abort
     let l:filename_uri = langserver#util#get_uri(l:server_name, expand('%'))
     let l:content_dict = langserver#util#get_text_document_item(l:server_name, expand('%'))
 
-    call langserver#message#send(l:server_name, 'textDocument/didOpen', l:content_dict)
+    return langserver#message#send(l:server_name, 'textDocument/didOpen', l:content_dict)
 endfunction
 
 ""
