@@ -12,7 +12,7 @@ function! langserver#goto#request(name) abort
         \)
 endfunction
 
-function! s:goto_defintion(name, uri, range_dict, options)
+function! langserver#goto#goto_defintion(name, uri, range_dict, options)
   " TODO: Case sensitivity?
   if a:uri !=? langserver#util#get_uri(a:name, expand('%'))
     " TODO: Open a new file

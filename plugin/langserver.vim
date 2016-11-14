@@ -6,6 +6,6 @@ let g:langserver_configuration = {
 
 
 " Open a text document, and alert the language server
-command LSPOpen call langserver#didOpenTextDocument()
+command! LSPOpen call langserver#didOpenTextDocument()
 
 

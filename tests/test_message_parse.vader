@@ -1,0 +1,7 @@
+
+Execute (Test Parsing):
+  let test_message = 'lsp server running'
+  let test_message = 'lsp(9):stderr: Event:stderr ==> langserver-go: reading on stdin, writing on stdout'
+  let test_message = 'lsp(9):stderr: Event:stderr ==> --> request #1: initialize: {"capabilities":{},"rootPath":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver"}'
+  let test_message = 'lsp(9):stderr: Event:stderr ==> <-- result #1: initialize: {"capabilities":{"textDocumentSync":1,"hoverProvider":true,"definitionProvider":true,"referencesProvider":true,"workspaceSymbolProvider":true}}'
+  let test_message = 'lsp(9):notification:notification success receieved for initiali'
