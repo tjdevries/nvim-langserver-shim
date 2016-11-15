@@ -189,3 +189,36 @@ endfunction
 function! langserver#util#get_file_contents(filename) abort
   return join(readfile(a:filename), "\n")
 endfunction
+
+
+""
+" Parse the stdin of a server
+function! langserver#util#parse_message(message) abort
+  if type(a:message) ==# type([])
+    let data = join(a:message, "\r\n")
+  elseif type(a:message) ==# type('')
+    let data = a:message
+  else
+  endif
+
+  let parsed = {}
+  if a:message =~? '--> request'
+    let parsed['type'] = 'request'
+  elseif a:message =~? '<-- result'
+    let parsed['type'] = 'result'
+  else
+    let parsed['type'] = 'info'
+  endif
+
+  let data = substitute(data, '--> request #\w: ', '', 'g')
+  let data = substitute(data, '<-- result #\w: ', '', 'g')
+
+  if parsed['type'] ==# 'request' || parsed['type'] ==# 'result'
+    let data = substitute(data, '^\(\w*\):', '"\1":', 'g')
+    let data = '{' . data . '}'
+    let data = json_decode(data)
+  endif
+
+  let parsed['data'] = data 
+  return parsed
+endfunction

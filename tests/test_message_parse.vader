@@ -1,7 +1,19 @@
 
 Execute (Test Parsing):
   let test_message = 'lsp server running'
-  let test_message = 'lsp(9):stderr: Event:stderr ==> langserver-go: reading on stdin, writing on stdout'
-  let test_message = 'lsp(9):stderr: Event:stderr ==> --> request #1: initialize: {"capabilities":{},"rootPath":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver"}'
-  let test_message = 'lsp(9):stderr: Event:stderr ==> <-- result #1: initialize: {"capabilities":{"textDocumentSync":1,"hoverProvider":true,"definitionProvider":true,"referencesProvider":true,"workspaceSymbolProvider":true}}'
-  let test_message = 'lsp(9):notification:notification success receieved for initiali'
+  let parsed = langserver#util#parse_message(test_message)
+  AssertEqual parsed, {'type': 'info', 'data': 'lsp server running'}
+
+  let test_message = 'langserver-go: reading on stdin, writing on stdout'
+  let parsed = langserver#util#parse_message(test_message)
+  AssertEqual parsed, {'type': 'info', 'data': 'langserver-go: reading on stdin, writing on stdout'}
+
+  let test_message = '--> request #1: initialize: {"capabilities":{},"rootPath":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver"}'
+  let parsed = langserver#util#parse_message(test_message)
+  let expected = {'type': 'request', 'data': {'initialize': {"capabilities":{}, "rootPath": "file:///home/tj/go/src/github.com/sourcegraph/go-langserver"}}}
+  AssertEqual parsed['type'], expected['type']
+  AssertEqual parsed['data'], expected['data']
+
+  let test_message = '<-- result #1: initialize: {"capabilities":{"textDocumentSync":1,"hoverProvider":true,"definitionProvider":true,"referencesProvider":true,"workspaceSymbolProvider":true}}'
+  let parsed = langserver#util#parse_message(test_message)
+  AssertEqual parsed, {'type': 'result', 'data': {"initialize": {"capabilities":{"textDocumentSync":1,"hoverProvider": v:true,"definitionProvider": v:true,"referencesProvider": v:true,"workspaceSymbolProvider": v:true}}}}
