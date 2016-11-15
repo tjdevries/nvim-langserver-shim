@@ -15,14 +15,13 @@ endfunction
 function! langserver#goto#goto_defintion(name, uri, range_dict, options)
   " TODO: Case sensitivity?
   if a:uri !=? langserver#util#get_uri(a:name, expand('%'))
-    " TODO: Open a new file
     let l:file_name = langserver#util#get_filename(a:name, a:uri)
     let l:file_bufnr = bufnr(l:file_name)
 
     if l:file_bufnr > 0
       execute(':silent buffer ' . bufnr(l:file_name))
     else
-      execute('silent edit ' . bufnr(l:file_name))
+      execute('silent edit ' . l:file_name)
     endif
 
     " Print an informative message

@@ -12,8 +12,14 @@ let s:diagnostic_severity = {
 
 ""
 " Get a uri from a filename
-function! langserver#util#get_uri(name, filename)
+function! langserver#util#get_uri(name, filename) abort
   return 'file://' . a:filename
+endfunction
+
+""
+" Get a filename from a uri
+function! langserver#util#get_filename(name, uri) abort
+  return substitute(a:uri, 'file://', '', 'g')
 endfunction
 
 ""
