@@ -21,7 +21,7 @@ endfunction
 "
 " Follows spec: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#position
 function! langserver#util#get_position() abort
-  return {'line': line('.'), 'character': col('.')}
+  return {'line': line('.') - 1, 'character': col('.') - 1}
 endfunction
 
 ""
@@ -195,16 +195,16 @@ endfunction
 " Parse the stdin of a server
 function! langserver#util#parse_message(message) abort
   if type(a:message) ==# type([])
-    let data = join(a:message, "\r\n")
+    let data = join(a:message, "")
   elseif type(a:message) ==# type('')
     let data = a:message
   else
   endif
 
   let parsed = {}
-  if a:message =~? '--> request'
+  if data =~? '--> request'
     let parsed['type'] = 'request'
-  elseif a:message =~? '<-- result'
+  elseif data =~? '<-- result'
     let parsed['type'] = 'result'
   else
     let parsed['type'] = 'info'
@@ -214,7 +214,7 @@ function! langserver#util#parse_message(message) abort
   let data = substitute(data, '<-- result #\w: ', '', 'g')
 
   if parsed['type'] ==# 'request' || parsed['type'] ==# 'result'
-    let data = substitute(data, '^\(\w*\):', '"\1":', 'g')
+    let data = substitute(data, '^\(\S*\):', '"\1":', 'g')
     let data = '{' . data . '}'
     let data = json_decode(data)
   endif

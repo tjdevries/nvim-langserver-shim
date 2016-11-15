@@ -1,6 +1,8 @@
 let s:langserver_executabe = 'langserver-go'
 let s:langserver_name = 'go'
 
+let s:debug = v:false
+
 function! s:on_stderr(id, data, event)
    " TODO: some function that parses this easily.
    " let split_data = split(a:data[0], ':')
@@ -11,7 +13,9 @@ function! s:on_stderr(id, data, event)
    "    echom 'lsp has found definition'
    " else
    echom 'lsp('.a:id.'):stderr: Event:' . a:event . ' ==> ' . join(a:data, "\r\n")
-   " endif
+
+   let parsed = langserver#util#parse_message(a:data)
+   echom 'Resulting data is: ' . string(parsed)
 endfunction
 
 function! s:on_exit(id, status, event)
@@ -55,21 +59,32 @@ endif
 sleep 1
 
 function! s:on_definition_request(id, data, event)
-   if type(a:data) != type([]) || a:data[0] =~? '.*request.*'
-      echom a:data
+   let parsed = langserver#util#parse_message(a:data)
+   let g:last_response = parsed
+
+   if parsed['type'] ==# 'result'
+      let data = parsed['data']['textDocument/definition'][0]
+   else
       return
    endif
 
-   echom 'This is the orig data : ' . string(a:data)
-   let split_data = json_decode(split(a:data[0], 'textDocument/definition: ')[1])
-   echom 'This is the split data: ' . string(a:split_data)
-   " echom 'This is the thing: ' . string(split_data)
-
-   if has_key(split_data, 'textDocument') && has_key(split_data, 'range')
-      echom 'URI:        ' . string(split_data['textDocument'])
-      echom 'Range dict: ' . string(split_data['range'])
+   if s:debug
+      echom string(a:data)
+      echom 'Definition data is: ' . string(parsed)
+   else
+      " {'data':
+      "     {'textDocument/definition':
+      "         [
+      "             {'uri': 'file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go',
+      "              'range': {
+      "                 'end': {'character': 29, 'line': 15},
+         "              'start': {'character': 23, 'line': 15}}
+         "          }
+      "         ]
+   "         },
+   "         'type': 'result'}
+      call langserver#goto#goto_defintion(g:lsp_id, data['uri'], data['range'], {})
    endif
-   " call langserver#goto#goto_defintion(g:lsp_id, split_data['textDocument'], 
 endfunction
 
 function! SendDefinitionRequest() abort
@@ -84,4 +99,4 @@ function! SendDefinitionRequest() abort
             \ })
 endfunction
 
-call lsp#lspClient#stop(g:lsp_id)
+" call lsp#lspClient#stop(g:lsp_id)
