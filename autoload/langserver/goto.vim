@@ -1,15 +1,42 @@
-" TODO: Add this.
-" TODO: Decide whether to create request in command or here
-function! langserver#goto#request(name) abort
+function! s:on_definition_request(id, data, event)
+   let parsed = langserver#util#parse_message(a:data)
+   let g:last_response = parsed
 
-  return langserver#message#content(
-        \ langserver#version#get_id(),
-        \ 'textDocument/definition',
-        \ {
-          \ 'textDocument': langserver#util#get_text_document_identifier(a:name),
-          \ 'position': langserver#util#get_position(),
-        \ }
-        \)
+   if parsed['type'] ==# 'result'
+      let data = parsed['data']['textDocument/definition'][0]
+   else
+      return
+   endif
+
+   if langserver#util#debug()
+      echom string(a:data)
+      echom 'Definition data is: ' . string(parsed)
+    endif
+
+    " {'data':
+    "     {'textDocument/definition':
+    "         [
+    "             {'uri': 'file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go',
+    "              'range': {
+    "                 'end': {'character': 29, 'line': 15},
+    "                 'start': {'character': 23, 'line': 15}}
+    "             }
+    "         ]
+    "      },
+    "      'type': 'result'}
+    call langserver#goto#goto_defintion(a:id, data['uri'], data['range'], {})
+endfunction
+
+function! langserver#goto#request(name) abort
+  call lsp#lspClient#send(a:name, {
+          \ 'method': 'textDocument/definition',
+          \ 'params': {
+             \ 'textDocument': langserver#util#get_text_document_identifier(a:name),
+             \ 'position': langserver#util#get_position(),
+          \ },
+          \ 'on_notification': function('s:on_definition_request'),
+          \ 'on_stderr': function('s:on_definition_request'),
+          \ })
 endfunction
 
 function! langserver#goto#goto_defintion(name, uri, range_dict, options)

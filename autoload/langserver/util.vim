@@ -23,6 +23,13 @@ function! langserver#util#get_filename(name, uri) abort
 endfunction
 
 ""
+" Get the root path
+" TODO: Not sure how to do this one well
+function! langserver#util#get_root_path(name) abort
+  return langserver#util#get_uri(a:name, getcwd())
+endfunction
+
+""
 " Get a position dictinoary like the position structure
 "
 " Follows spec: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#position
@@ -227,4 +234,8 @@ function! langserver#util#parse_message(message) abort
 
   let parsed['data'] = data 
   return parsed
+endfunction
+
+function! langserver#util#debug()
+  return v:true
 endfunction
