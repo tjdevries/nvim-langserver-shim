@@ -76,16 +76,16 @@ function! langserver#util#get_diagnostic(start, end, message, options) abort
         \ 'messsage': a:message
         \ }
 
-  if has_key(options, 'severity')
-    let return_dict['severity'] = options['severity']
+  if has_key(a:options, 'severity')
+    let return_dict['severity'] = a:options['severity']
   endif
 
-  if has_key(options, 'code')
-    let return_dict['code'] = options['code']
+  if has_key(a:options, 'code')
+    let return_dict['code'] = a:options['code']
   endif
 
-  if has_key(options, 'source')
-    let return_dict['source'] = options['source']
+  if has_key(a:options, 'source')
+    let return_dict['source'] = a:options['source']
   endif
 
   return return_dict
@@ -125,7 +125,7 @@ endfunction
 function! langserver#util#get_text_edit(start, end, new_text) abort
   return {
         \ 'range': langserver#util#get_range(a:start, a:end),
-        \ 'newText': new_text
+        \ 'newText': a:new_text
         \ }
 endfunction
 
@@ -138,7 +138,7 @@ endfunction
 " @param
 function! langserver#util#get_workspace_edit(uri, edit) abort
   let my_dict = {
-        \ uri: edit
+        \ 'uri': 'edit',
         \ }
 endfunction
 
@@ -149,7 +149,8 @@ endfunction
 function! langserver#util#get_text_document_identifier(name) abort
   " TODO: I'm not sure if I'll be looking to get other items or what from this
   " function
-  return {'uri': langserver#util#get_uri(a:name, expand('%'))}
+  return {'uri': langserver#util#get_uri(a:name, expand('%:p'))}
+  " return {'uri': langserver#util#get_uri(a:name, expand('%'))}
 endfunction
 
 ""
@@ -208,7 +209,7 @@ endfunction
 " Parse the stdin of a server
 function! langserver#util#parse_message(message) abort
   if type(a:message) ==# type([])
-    let data = join(a:message, "")
+    let data = join(a:message, '')
   elseif type(a:message) ==# type('')
     let data = a:message
   else
@@ -236,6 +237,6 @@ function! langserver#util#parse_message(message) abort
   return parsed
 endfunction
 
-function! langserver#util#debug()
+function! langserver#util#debug() abort
   return v:true
 endfunction

@@ -1,4 +1,4 @@
-function! s:on_definition_request(id, data, event)
+function! s:on_definition_request(id, data, event) abort
    let parsed = langserver#util#parse_message(a:data)
    let g:last_response = parsed
 
@@ -39,7 +39,7 @@ function! langserver#goto#request(name) abort
           \ })
 endfunction
 
-function! langserver#goto#goto_defintion(name, uri, range_dict, options)
+function! langserver#goto#goto_defintion(name, uri, range_dict, options) abort
   " TODO: Case sensitivity?
   if a:uri !=? langserver#util#get_uri(a:name, expand('%'))
     let l:file_name = langserver#util#get_filename(a:name, a:uri)
@@ -67,7 +67,11 @@ function! langserver#goto#goto_defintion(name, uri, range_dict, options)
   "                 \ )
   "     normal <line>G<column>|
   " This keeps the jumplist intact.
-  execute(printf("norm! %sG%s|",
+  echom printf('norm! %sG%s|',
+        \ a:range_dict['start']['line'] + 1,
+        \ a:range_dict['start']['character'] + 1,
+        \ )
+  execute(printf('norm! %sG%s|',
         \ a:range_dict['start']['line'] + 1,
         \ a:range_dict['start']['character'] + 1,
         \ ))
@@ -83,7 +87,7 @@ endfunction
 " @param options: Open in split, etc.
 "   TODO: Open in split
 "   TODO: ...
-function! langserver#goto#response(name, location, ...)
+function! langserver#goto#response(name, location, ...) abort
   if a:0 > 1
     let response_errors = a:1
     let l:options = a:2
@@ -100,6 +104,6 @@ function! langserver#goto#response(name, location, ...)
     " TODO: Handle lists of locations
   else
     " This means we have only one location to go to
-    call s:goto_defintion(a:name, a:location['uri'], a:location['range'], l:options)
+    call langserver#goto#goto_defintion(a:name, a:location['uri'], a:location['range'], l:options)
   endif
 endfunction
