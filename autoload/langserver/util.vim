@@ -193,7 +193,7 @@ endfunction
 "
 function! langserver#util#get_text_document_position_params() abort
   return {
-        \ 'textDocument': langserver#util#get_text_document_identifier(),
+        \ 'textDocument': langserver#util#get_text_document_identifier(langserver#util#get_lsp_id()),
         \ 'position': langserver#util#get_position(),
         \ }
 endfunction
@@ -224,8 +224,8 @@ function! langserver#util#parse_message(message) abort
     let parsed['type'] = 'info'
   endif
 
-  let data = substitute(data, '--> request #\w: ', '', 'g')
-  let data = substitute(data, '<-- result #\w: ', '', 'g')
+  let data = substitute(data, '--> request #\w*: ', '', 'g')
+  let data = substitute(data, '<-- result #\w*: ', '', 'g')
 
   if parsed['type'] ==# 'request' || parsed['type'] ==# 'result'
     let data = substitute(data, '^\(\S*\):', '"\1":', 'g')
@@ -239,4 +239,8 @@ endfunction
 
 function! langserver#util#debug() abort
   return v:true
+endfunction
+
+function! langserver#util#get_lsp_id() abort
+  return g:lsp_id_map[&filetype]
 endfunction
