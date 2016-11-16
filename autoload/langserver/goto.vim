@@ -67,10 +67,11 @@ function! langserver#goto#goto_defintion(name, uri, range_dict, options) abort
   "                 \ )
   "     normal <line>G<column>|
   " This keeps the jumplist intact.
-  echom printf('norm! %sG%s|',
-        \ a:range_dict['start']['line'] + 1,
-        \ a:range_dict['start']['character'] + 1,
-        \ )
+  " echom printf('norm! %sG%s|',
+  "       \ a:range_dict['start']['line'] + 1,
+  "       \ a:range_dict['start']['character'] + 1,
+  "       \ )
+  echom 'Am i getting here'
   execute(printf('norm! %sG%s|',
         \ a:range_dict['start']['line'] + 1,
         \ a:range_dict['start']['character'] + 1,

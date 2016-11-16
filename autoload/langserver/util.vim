@@ -242,6 +242,8 @@ function! langserver#util#debug() abort
 endfunction
 
 function! langserver#util#get_lsp_id() abort
+  let g:lsp_id_map = get(g:, 'lsp_id_map', {})
+
   if has_key(g:lsp_id_map, &filetype)
     return g:lsp_id_map[&filetype]
   else
