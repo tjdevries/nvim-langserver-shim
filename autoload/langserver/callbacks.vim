@@ -1,4 +1,8 @@
-function! langserver#callbacks#on_stderr(id, data, event)
+function! langserver#callbacks#on_stdout(id, data, event) abort
+   echom 'LSP STDOUT(' . a:id . '): ' . string(a:data)
+endfunction
+
+function! langserver#callbacks#on_stderr(id, data, event) abort
    " TODO: some function that parses this easily.
    " let split_data = split(a:data[0], ':')
    " echom '{' . join(split_data[1:], ':') . '}'
@@ -9,23 +13,38 @@ function! langserver#callbacks#on_stderr(id, data, event)
    " else
    echom 'lsp('.a:id.'):stderr: Event:' . a:event . ' ==> ' . join(a:data, "\r\n")
 
-   let parsed = langserver#util#parse_message(a:data)
-   echom 'Resulting data is: ' . string(parsed)
+   " let parsed = langserver#util#parse_message(a:data)
+   " echom 'Resulting data is: ' . string(parsed)
+   " echom 'STDERR: Request ' . string(a:data.request)
 endfunction
 
-function! langserver#callbacks#on_exit(id, status, event)
+function! langserver#callbacks#on_exit(id, status, event) abort
    echom 'lsp('.a:id.'):exit:'.a:status
 endfunction
 
-function! langserver#callbacks#on_notification(id, data, event)
+function! langserver#callbacks#on_notification(id, data, event) abort
+   if has_key(a:data, 'response')
+      if langserver#util#debug()
+         echom 'LSP RSP: ' . string(a:data)
+      endif
+
+      if g:_last_topic_sent ==? 'textDocument/references'
+         call langserver#references#callback(a:id, a:data, a:event)
+      else
+         echom 'LAST REQUEST: ' . string(lsp#lspClient#get_last_request_id(a:id))
+      endif
+   endif
+
    if lsp#lspClient#is_error(a:data.response)
       echom 'lsp('.a:id.'):notification:notification error receieved for '.a:data.request.method
    else
-      echom 'lsp('.a:id.'):notification:notification success receieved for '.a:data.request.method
+      if langserver#util#debug()
+         " echom 'lsp('.a:id.'):notification:notification success receieved for '.a:data.request.method
+      endif
+
+      if a:data.request.method ==? 'textDocument/references'
+         echom 'LSP NOTIFI References Method matched: ' . string(a:data.request)
+         " call langserver#references#callback(a:data.request)
+      endif
    endif
 endfunction
-
-function! langserver#callbacks#on_notification1(id, data, event)
-   echom 'lsp('.a:id.'):notification1:'json_encode(a:data)
-endfunction
-

@@ -11,6 +11,7 @@ Shim for the language server protocol developed by Microsoft. The protocol can b
     - [x] Initialize
     - [x] Shutdown
     - [x] textDocument/didOpen
+    - [x] textDocument/references
     - [x] Go to definition: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#goto-definition-request
     - [x] Hover
     - [ ] Find references: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#find-references-request

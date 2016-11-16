@@ -22,7 +22,13 @@ function! langserver#references#transform_reply(message) abort
    return l:location_list
 endfunction
 
-function! s:on_text_document_references(id, data, event) abort
+function! langserver#references#callback(id, data, event) abort
+   echom 'THIS IS IN THE REF CALLBACK'
+   if has_key(a:data, 'response')
+      echom string(a:data.response)
+   endif
+   return
+
    let parsed = langserver#util#parse_message(a:data)
    let g:last_response = parsed
 
@@ -39,17 +45,20 @@ function! langserver#references#request() abort
    let l:params = langserver#util#get_text_document_position_params()
    call extend(l:params, {'context': {'includeDeclaration': v:true}})
 
+   let g:_last_topic_sent = s:method
    return lsp#lspClient#send(langserver#util#get_lsp_id(), {
             \ 'method': s:method,
             \ 'params': l:params,
-            \ 'on_notification': function('s:on_text_document_references'),
-            \ 'on_stderr': function('s:on_text_document_references'),
             \ })
 endfunction
 
 function! langserver#references#display(loc_list) abort
-   echo 'Displaying references'
-   echo string(a:loc_list)
+   if langserver#util#debug()
+      echo 'Displaying references'
+      echo string(a:loc_list)
+   endif
+
+   " TODO: Highlight the references, and turn them off somehow
    call setloclist(0,
             \ a:loc_list,
             \ 'r',

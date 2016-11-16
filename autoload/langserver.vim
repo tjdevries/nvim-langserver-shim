@@ -6,7 +6,7 @@ let g:lsp_id_map = get(g:, 'lsp_id_map', {})
 " @param options (dict): {cmd, on_stderr?, on_exit?, on_notification?}
 function! langserver#start(options) abort
     if has_key(a:options, 'cmd')
-        let cmd = options['cmd']
+        let cmd = a:options['cmd']
     else
         let cmd = langserver#default#cmd()
         if cmd == [-1]
@@ -17,6 +17,7 @@ function! langserver#start(options) abort
 
     let l:lsp_id = lsp#lspClient#start({
                 \ 'cmd': cmd,
+                \ 'on_stdout': function('langserver#callbacks#on_stdout'),
                 \ 'on_stderr': function('langserver#callbacks#on_stderr'),
                 \ 'on_exit': function('langserver#callbacks#on_exit'),
                 \ 'on_notification': function('langserver#callbacks#on_notification')
