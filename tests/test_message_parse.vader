@@ -21,3 +21,11 @@ Execute (Test Parsing):
   let test_message = '<-- result #2: textDocument/definition: {"textDocument":{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go"},"position":{"character":10,"line":17}}'
   let parsed = langserver#util#parse_message(test_message)
   AssertEqual parsed, {'type': 'result', 'data': {'textDocument/definition': {"textDocument": {"uri": "file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go"}, "position": {"character":10, "line":17}}}}
+
+Execute (Test message results greater than 10):
+  let test_message = '--> request #11: textDocument/hover: {"textDocument":{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/handler.go"},"position":{"character":9,"line":44}}'
+  let parsed = langserver#util#parse_message(test_message)
+  AssertEqual parsed, {'type': 'request', 'data': {'textDocument/hover': {"textDocument":{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/handler.go"},"position":{"character":9,"line":44}}}}
+
+  let test_message = '<-- result #11: textDocument/hover: {"contents":[{"language":"go","value":"type LangHandler struct"},{"language":"markdown","value":"LangHandler is a Go language server LSP/JSON-RPC handler. \n\n"}],"range":{"start":{"line":44,"character":9},"end":{"line":44,"character":20}}}'
+  let parsed = langserver#util#parse_message(test_message)
