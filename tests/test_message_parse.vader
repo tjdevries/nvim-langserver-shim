@@ -29,3 +29,10 @@ Execute (Test message results greater than 10):
 
   let test_message = '<-- result #11: textDocument/hover: {"contents":[{"language":"go","value":"type LangHandler struct"},{"language":"markdown","value":"LangHandler is a Go language server LSP/JSON-RPC handler. \n\n"}],"range":{"start":{"line":44,"character":9},"end":{"line":44,"character":20}}}'
   let parsed = langserver#util#parse_message(test_message)
+
+Execute (Test parse of references):
+  let test_message = '<-- result #25: textDocument/references: [{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":7,"character":22},"end":{"line":7,"character":28}}},{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":9,"character":4},"end":{"line":9,"character":10}}},{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":9,"character":39},"end":{"line":9,"character":45}}},{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":10,"character":16},"end":{"line":10,"character":22}}},{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":12,"character":13},"end":{"line":12,"character":19}}}]'
+
+  let parsed = langserver#util#parse_message(test_message)
+  let transformed = langserver#references#transform_reply(parsed)
+  Log transformed

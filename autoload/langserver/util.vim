@@ -242,5 +242,9 @@ function! langserver#util#debug() abort
 endfunction
 
 function! langserver#util#get_lsp_id() abort
-  return g:lsp_id_map[&filetype]
+  if has_key(g:lsp_id_map, &filetype)
+    return g:lsp_id_map[&filetype]
+  else
+    return -1
+  endif
 endfunction
