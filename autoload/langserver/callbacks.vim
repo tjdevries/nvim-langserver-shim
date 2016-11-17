@@ -38,6 +38,8 @@ function! langserver#callbacks#on_notification(id, data, event) abort
          call langserver#goto#callback(a:id, a:data, a:event)
       elseif l:last_topic ==? 'textDocument/hover'
          call langserver#hover#callback(a:id, a:data, a:event)
+      elseif l:last_topic ==? 'textDocument/didOpen'
+         call langserver#documents#callback_did_open(a:id, a:data, a:event)
       else
          call langserver#log#log('warning', 'LAST REQUEST: ' . l:last_topic, v:true)
       endif

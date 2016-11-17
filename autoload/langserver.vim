@@ -10,7 +10,7 @@ function! langserver#start(options) abort
     else
         let l:cmd = langserver#default#cmd()
         if l:cmd == [-1]
-            echom 'No valid langserver for ' . &filetype . '. Please modify `g:langserver_executables`'
+            call langserver#log#log('error', 'No valid langserver for ' . &filetype . '. Please modify `g:langserver_executables`', v:true)
             return
         endif
     endif
@@ -30,7 +30,7 @@ function! langserver#start(options) abort
     endif
 
     if l:lsp_id > 0
-       echom 'lsp server running'
+       call langserver#log#log('info', 'lsp server running')
        call langserver#client#send(l:lsp_id, {
                 \ 'method': 'initialize',
                 \ 'params': {
@@ -39,34 +39,10 @@ function! langserver#start(options) abort
                 \ },
                 \ })
     else
-       echom 'failed to start lsp server'
+       call langserver#log#log('error', 'failed to start lsp server', v:true)
     endif
 
     let g:lsp_id_map[&filetype] = l:lsp_id
 
     return l:lsp_id
-endfunction
-
-""
-" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didchangetextdocument-notification
-function! langserver#didChangeTextDocument() abort
-
-endfunction
-
-""
-" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didclosetextdocument-notification
-function! langserver#didCloseTextDocument() abort
-
-endfunction
-
-""
-" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didsavetextdocument-notification
-function! langserver#didSaveTextDocument() abort
-
-endfunction
-
-""
-" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didchangewatchedfiles-notification
-function! langserver#didChangeWatchedFiles() abort
-
 endfunction

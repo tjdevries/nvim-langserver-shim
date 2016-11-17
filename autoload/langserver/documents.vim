@@ -1,8 +1,12 @@
-function! s:on_did_open_request(id, data, event) abort
-   let l:parsed = langserver#util#parse_message(a:data)
-   let g:last_response = l:parsed
+function! langserver#documents#callback_did_open(id, data, event) abort
+   call langserver#log#callback(a:id, a:data, a:event)
 
-   echom string(l:parsed)
+   if type(a:data) != type({})
+      return
+   endif
+
+   let g:last_response = a:data
+   call langserver#log#log('info', string(a:data))
 endfunction
 
 ""
@@ -18,8 +22,30 @@ function! langserver#documents#did_open() abort
     return langserver#client#send(langserver#util#get_lsp_id(), {
              \ 'method': 'textDocument/didOpen',
              \ 'params': langserver#util#get_text_document_identifier(l:server_name),
-             \ 'on_notification': function('s:on_did_open_request'),
-             \ 'on_stderr': function('s:on_did_open_request'),
              \ })
 endfunction
 
+
+""
+" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didchangetextdocument-notification
+function! langserver#documents#did_change() abort
+
+endfunction
+
+""
+" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didclosetextdocument-notification
+function! langserver#documents#did_close() abort
+
+endfunction
+
+""
+" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didsavetextdocument-notification
+function! langserver#documents#did_save() abort
+
+endfunction
+
+""
+" Corresponds to: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didchangewatchedfiles-notification
+function! langserver#documents#did_change_watched_files() abort
+
+endfunction
