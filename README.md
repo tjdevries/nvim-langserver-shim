@@ -2,6 +2,18 @@
 
 Shim for the language server protocol developed by Microsoft. The protocol can be found here: https://github.com/Microsoft/language-server-protocol
 
+## Configuration
+
+You will need to put this somewhere that is sourced on startup.
+
+```vim
+let g:langserver_executables = {
+      \ 'go': ['langserver-go', '-trace', '-logfile', expand('~/Desktop/langserver-go.log')],
+      \ }
+```
+
+More configuration to come...
+
 ## Plans
 
 - [x] Use vim lsp
@@ -14,7 +26,7 @@ Shim for the language server protocol developed by Microsoft. The protocol can b
     - [x] textDocument/references
     - [x] Go to definition: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#goto-definition-request
     - [x] Hover
-    - [ ] Find references: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#find-references-request
+    - [x] Find references: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#find-references-request
     - [ ] Highlights:
     - [ ] Completion:
         - [ ] Then deoplete source for completion
