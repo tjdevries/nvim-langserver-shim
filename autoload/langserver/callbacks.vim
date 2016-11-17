@@ -23,19 +23,27 @@ function! langserver#callbacks#on_exit(id, status, event) abort
 endfunction
 
 function! langserver#callbacks#on_notification(id, data, event) abort
+
    if has_key(a:data, 'response')
       if langserver#util#debug()
+         let g:last_response = a:data
          echom 'LSP RSP: ' . string(a:data)
       endif
 
-      if g:_last_topic_sent ==? 'textDocument/references'
+      let l:last_topic = a:data['request']['method']
+
+      if l:last_topic ==? 'textDocument/references'
          call langserver#references#callback(a:id, a:data, a:event)
+      elseif l:last_topic ==? 'textDocument/definition'
+         call langserver#goto#callback(a:id, a:data, a:event)
+      elseif l:last_topic ==? 'textDocument/hover'
+         call langserver#hover#callback(a:id, a:data, a:event)
       else
-         echom 'LAST REQUEST: ' . string(lsp#lspClient#get_last_request_id(a:id))
+         call langserver#log#log('warning', 'LAST REQUEST: ' . l:last_topic, v:true)
       endif
    endif
 
-   if lsp#lspClient#is_error(a:data.response)
+   if langserver#client#is_error(a:data.response)
       echom 'lsp('.a:id.'):notification:notification error receieved for '.a:data.request.method
    else
       if langserver#util#debug()

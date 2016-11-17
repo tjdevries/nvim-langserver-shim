@@ -2,8 +2,12 @@
 " License: The MIT License
 " Website: https://github.com/prabirshrestha/async.vim
 
-let s:save_cpo = &cpo
-set cpo&vim
+if !has('nvim')
+    " vint: -ProhibitAbbreviationOption
+    let s:save_cpo = &cpo
+    set cpo&vim
+    " vint: +ProhibitAbbreviationOption
+endif
 
 let s:jobidseq = 0
 let s:jobs = {} " { job, opts, type: 'vimjob|nvimjob'}
@@ -11,7 +15,7 @@ let s:job_type_nvimjob = 'nvimjob'
 let s:job_type_vimjob = 'vimjob'
 let s:job_error_unsupported_job_type = -2 " unsupported job type
 
-function! s:job_supported_types()
+function! s:job_supported_types() abort
     let l:supported_types = []
     if has('nvim')
         let l:supported_types += [s:job_type_nvimjob]
@@ -22,23 +26,23 @@ function! s:job_supported_types()
     return l:supported_types
 endfunction
 
-function! s:job_supports_type(type)
+function! s:job_supports_type(type) abort
     return index(s:job_supported_types(), a:type) >= 0
 endfunction
 
-function! s:out_cb(job, data, jobid, opts)
+function! s:out_cb(job, data, jobid, opts) abort
     if has_key(a:opts, 'on_stdout')
         call a:opts.on_stdout(a:jobid, split(a:data, "\n"), 'stdout')
     endif
 endfunction
 
-function! s:err_cb(job, data, jobid, opts)
+function! s:err_cb(job, data, jobid, opts) abort
     if has_key(a:opts, 'on_stderr')
         call a:opts.on_stderr(a:jobid, split(a:data, "\n"), 'stderr')
     endif
 endfunction
 
-function! s:exit_cb(job, status, jobid, opts)
+function! s:exit_cb(job, status, jobid, opts) abort
     if has_key(a:opts, 'on_exit')
         call a:opts.on_exit(a:jobid, a:status, 'exit')
     endif
@@ -47,7 +51,7 @@ function! s:exit_cb(job, status, jobid, opts)
     endif
 endfunction
 
-function! s:on_stdout(jobid, data, event)
+function! s:on_stdout(jobid, data, event) abort
     if has_key(s:jobs, a:jobid)
         let l:jobinfo = s:jobs[a:jobid]
         if has_key(l:jobinfo.opts, 'on_stdout')
@@ -56,7 +60,7 @@ function! s:on_stdout(jobid, data, event)
     endif
 endfunction
 
-function! s:on_stderr(jobid, data, event)
+function! s:on_stderr(jobid, data, event) abort
     if has_key(s:jobs, a:jobid)
         let l:jobinfo = s:jobs[a:jobid]
         if has_key(l:jobinfo.opts, 'on_stderr')
@@ -65,7 +69,7 @@ function! s:on_stderr(jobid, data, event)
     endif
 endfunction
 
-function! s:on_exit(jobid, status, event)
+function! s:on_exit(jobid, status, event) abort
     if has_key(s:jobs, a:jobid)
         let l:jobinfo = s:jobs[a:jobid]
         if has_key(l:jobinfo.opts, 'on_exit')
@@ -74,7 +78,7 @@ function! s:on_exit(jobid, status, event)
     endif
 endfunction
 
-function! s:job_start(cmd, opts)
+function! s:job_start(cmd, opts) abort
     let l:jobtypes = s:job_supported_types()
     let l:jobtype = ''
 
@@ -91,14 +95,14 @@ function! s:job_start(cmd, opts)
 
     if empty(l:jobtype)
         " find the best jobtype
-        for jobtype in l:jobtypes
-            if s:job_supports_type(jobtype)
-                let l:jobtype = jobtype
+        for l:jobtype in l:jobtypes
+            if s:job_supports_type(l:jobtype)
+                let l:jobtype = l:jobtype
             endif
         endfor
     endif
 
-    if l:jobtype == ''
+    if l:jobtype ==? ''
         return s:job_error_unsupported_job_type
     endif
 
@@ -123,7 +127,7 @@ function! s:job_start(cmd, opts)
             \ 'err_cb': {job,data->s:err_cb(job, data, l:jobid, a:opts)},
             \ 'exit_cb': {job,data->s:exit_cb(job, data, l:jobid, a:opts)},
             \ 'mode': 'raw',
-        \})
+        \ })
         let s:jobs[l:jobid] = {
             \ 'type': s:job_type_vimjob,
             \ 'opts': a:opts,
@@ -137,7 +141,7 @@ function! s:job_start(cmd, opts)
     return l:jobid
 endfunction
 
-function! s:job_stop(jobid)
+function! s:job_stop(jobid) abort
     if has_key(s:jobs, a:jobid)
         let l:jobinfo = s:jobs[a:jobid]
         if l:jobinfo.type == s:job_type_nvimjob
@@ -151,7 +155,7 @@ function! s:job_stop(jobid)
     endif
 endfunction
 
-function! s:job_send(jobid, data)
+function! s:job_send(jobid, data) abort
     let l:jobinfo = s:jobs[a:jobid]
     if l:jobinfo.type == s:job_type_nvimjob
         call jobsend(a:jobid, a:data)
@@ -161,15 +165,15 @@ function! s:job_send(jobid, data)
 endfunction
 
 " public apis {{{
-function lsp#utils#job#start(cmd, opts) abort
+function! langserver#job#start(cmd, opts) abort
     return s:job_start(a:cmd, a:opts)
 endfunction
 
-function lsp#utils#job#stop(jobid) abort
+function! langserver#job#stop(jobid) abort
     call s:job_stop(a:jobid)
 endfunction
 
-function lsp#utils#job#send(jobid, data) abort
+function! langserver#job#send(jobid, data) abort
     call s:job_send(a:jobid, a:data)
 endfunction
 " }}}

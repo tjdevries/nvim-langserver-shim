@@ -1,8 +1,8 @@
 function! s:on_did_open_request(id, data, event) abort
-   let parsed = langserver#util#parse_message(a:data)
-   let g:last_response = parsed
+   let l:parsed = langserver#util#parse_message(a:data)
+   let g:last_response = l:parsed
 
-   echom string(parsed)
+   echom string(l:parsed)
 endfunction
 
 ""
@@ -15,7 +15,7 @@ function! langserver#documents#did_open() abort
     let l:server_name = langserver#util#get_lsp_id()
     let l:filename_uri = langserver#util#get_uri(l:server_name, expand('%'))
 
-    return lsp#lspClient#send(langserver#util#get_lsp_id(), {
+    return langserver#client#send(langserver#util#get_lsp_id(), {
              \ 'method': 'textDocument/didOpen',
              \ 'params': langserver#util#get_text_document_identifier(l:server_name),
              \ 'on_notification': function('s:on_did_open_request'),

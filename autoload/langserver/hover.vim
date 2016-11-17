@@ -1,46 +1,50 @@
-function! s:on_hover_request(id, data, event) abort
-   let parsed = langserver#util#parse_message(a:data)
-   let g:last_response = parsed
+function! langserver#hover#callback(id, data, event) abort
+  call langserver#log#callback(a:id, a:data, a:event)
+
+  if type(a:data) != type({})
+    return
+  endif
+
+  if has_key(a:data, 'response')
+    let l:parsed_data = a:data['response']['result']
+  else
+    return
+  endif
+
+  let g:last_response = l:parsed_data
 
 
-" {'data': {'textDocument/hover': {'range': {'end': {'character': 20, 'line': 44}, 'start': {'character': 9, 'line': 44}}, 'contents': [{'language': 'go', 'value': 'type LangHandler struct'}, {'language': 'markdown', 'value': 'LangHandler is a Go language server LSP/JSON-RPC handler.'}]}}, 'type': 'result'}
-   if parsed['type'] ==# 'result'
-      " TODO: Correctly parse data
-      let range = parsed['data']['textDocument/hover']['range']
-      let data = parsed['data']['textDocument/hover']['contents']
-   else
-      return
-   endif
+  " {'data': {'textDocument/hover': {'range': {'end': {'character': 20, 'line': 44}, 'start': {'character': 9, 'line': 44}}, 'contents': [{'language': 'go', 'value': 'type LangHandler struct'}, {'language': 'markdown', 'value': 'LangHandler is a Go language server LSP/JSON-RPC handler.'}]}}, 'type': 'result'}
+  let l:range = a:data['response']['result']['range']
+  let l:data = a:data['response']['result']['contents']
 
-   call langserver#hover#display(range, data)
+  call langserver#hover#display(l:range, l:data)
 endfunction
 
 function! langserver#hover#request() abort
-   return lsp#lspClient#send(langserver#util#get_lsp_id(), {
-            \ 'method': 'textDocument/hover',
-            \ 'params': langserver#util#get_text_document_position_params(),
-            \ 'on_notification': function('s:on_hover_request'),
-            \ 'on_stderr': function('s:on_hover_request'),
-            \ })
+  return langserver#client#send(langserver#util#get_lsp_id(), {
+        \ 'method': 'textDocument/hover',
+        \ 'params': langserver#util#get_text_document_position_params(),
+        \ })
 endfunction
 
 function! langserver#hover#display(range, data) abort
-   let s:my_last_highlight = matchaddpos("WarningMsg", langserver#highlight#matchaddpos_range(a:range))
-   redraw
+  let s:my_last_highlight = matchaddpos('WarningMsg', langserver#highlight#matchaddpos_range(a:range))
+  redraw
 
-   let hover_string = ''
-   for explanation in a:data
-      let hover_string .= printf("%s: %s\n",
-               \ explanation['language'],
-               \ explanation['value'],
-               \ )
-   endfor
+  let l:hover_string = ''
+  for l:explanation in a:data
+    let l:hover_string .= printf("%s: %s\n",
+          \ l:explanation['language'],
+          \ l:explanation['value'],
+          \ )
+  endfor
 
-   echo hover_string
+  echo l:hover_string
 
-   return timer_start(5000, function('s:delete_highlight'))
+  return timer_start(5000, function('s:delete_highlight'))
 endfunction
 
 function! s:delete_highlight() abort
-   silent! call matchdelete(s:my_last_highlight)
+  silent! call matchdelete(s:my_last_highlight)
 endfunction

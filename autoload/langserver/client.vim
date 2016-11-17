@@ -8,7 +8,7 @@ let s:lsp_text_document_sync_kind_none = 0
 let s:lsp_text_document_sync_kind_full = 1
 let s:lsp_text_document_sync_kind_incremental = 2
 
-function! s:_on_lsp_stdout(id, data, event)
+function! s:_on_lsp_stdout(id, data, event) abort
     if has_key(s:lsp_clients, a:id)
         let l:client = s:lsp_clients[a:id]
 
@@ -16,7 +16,7 @@ function! s:_on_lsp_stdout(id, data, event)
 
         if l:client.stdout.max_buffer_size != -1 && len(l:client.stdout.buffer) > l:client.stdout.max_buffer_size
             echom 'lsp: reached max buffer size'
-            call lsp#utils#job#stop(a:id)
+            call langserver#job#stop(a:id)
         endif
 
         while 1
@@ -48,7 +48,7 @@ function! s:_on_lsp_stdout(id, data, event)
                 if len(l:client.stdout.buffer) >= l:client.stdout.current_content_length
                     " we have complete message
                     let l:response_str = l:client.stdout.buffer[:l:client.stdout.current_content_length - 1]
-                    let l:client.stdout.buffer = l:client.stdout.buffer[l:client.stdout.current_content_length:]
+                    let l:client.stdout.buffer = l:client.stdout.buffer[l:client.stdout.current_content_length :]
                     let l:client.stdout.next_token = s:lsp_token_type_contentlength
                     let l:response_msg = json_decode(l:response_str)
                     if has_key(l:response_msg, 'id') && has_key(l:client.on_notifications, l:response_msg.id)
@@ -71,7 +71,7 @@ function! s:_on_lsp_stdout(id, data, event)
     endif
 endfunction
 
-function! s:_on_lsp_stderr(id, data, event)
+function! s:_on_lsp_stderr(id, data, event) abort
     if has_key(s:lsp_clients, a:id)
         let l:client = s:lsp_clients[a:id]
         if has_key(l:client.opts, 'on_stderr')
@@ -80,7 +80,7 @@ function! s:_on_lsp_stderr(id, data, event)
     endif
 endfunction
 
-function! s:_on_lsp_exit(id, status, event)
+function! s:_on_lsp_exit(id, status, event) abort
     if has_key(s:lsp_clients, a:id)
         let l:client = s:lsp_clients[a:id]
         if has_key(l:client.opts, 'on_exit')
@@ -89,12 +89,12 @@ function! s:_on_lsp_exit(id, status, event)
     endif
 endfunction
 
-function! s:lsp_start(opts)
+function! s:lsp_start(opts) abort
     if !has_key(a:opts, 'cmd')
         return -1
     endif
 
-    let l:lsp_client_id = lsp#utils#job#start(a:opts.cmd, {
+    let l:lsp_client_id = langserver#job#start(a:opts.cmd, {
         \ 'on_stdout': function('s:_on_lsp_stdout'),
         \ 'on_stderr': function('s:_on_lsp_stderr'),
         \ 'on_exit': function('s:_on_lsp_exit'),
@@ -120,11 +120,11 @@ function! s:lsp_start(opts)
     return l:lsp_client_id
 endfunction
 
-function! s:lsp_stop(id)
-    call lsp#utils#job#stop(a:id)
+function! s:lsp_stop(id) abort
+    call langserver#job#stop(a:id)
 endfunction
 
-function! s:lsp_send_request(id, opts) " opts = { method, params?, on_notification }
+function! s:lsp_send_request(id, opts) abort " opts = { method, params?, on_notification }
     if has_key(s:lsp_clients, a:id)
         let l:client = s:lsp_clients[a:id]
 
@@ -148,7 +148,7 @@ function! s:lsp_send_request(id, opts) " opts = { method, params?, on_notificati
             let l:client.opts.on_stderr = a:opts.on_stderr
         endif
 
-        call lsp#utils#job#send(l:client.id, l:req_data)
+        call langserver#job#send(l:client.id, l:req_data)
 
         return l:req_seq
     else
@@ -156,37 +156,37 @@ function! s:lsp_send_request(id, opts) " opts = { method, params?, on_notificati
     endif
 endfunction
 
-function! s:lsp_get_last_request_id(id)
+function! s:lsp_get_last_request_id(id) abort
     return s:lsp_clients[a:id].req_seq
 endfunction
 
-function! s:lsp_is_error(notification)
+function! s:lsp_is_error(notification) abort
     return has_key(a:notification, 'error')
 endfunction
 
 " public apis {{{
 
-let lsp#lspClient#text_document_sync_kind_none = s:lsp_text_document_sync_kind_none
-let lsp#lspClient#text_document_sync_kind_full = s:lsp_text_document_sync_kind_full
-let lsp#lspClient#text_document_sync_kind_incremental = s:lsp_text_document_sync_kind_incremental
+let g:langserver#client#text_document_sync_kind_none = s:lsp_text_document_sync_kind_none
+let g:langserver#client#text_document_sync_kind_full = s:lsp_text_document_sync_kind_full
+let g:langserver#client#text_document_sync_kind_incremental = s:lsp_text_document_sync_kind_incremental
 
-function! lsp#lspClient#start(opts)
+function! langserver#client#start(opts) abort
     return s:lsp_start(a:opts)
 endfunction
 
-function! lsp#lspClient#stop(client_id)
+function! langserver#client#stop(client_id) abort
     return s:lsp_stop(a:client_id)
 endfunction
 
-function! lsp#lspClient#send(client_id, opts)
+function! langserver#client#send(client_id, opts) abort
     return s:lsp_send_request(a:client_id, a:opts)
 endfunction
 
-function! lsp#lspClient#get_last_request_id(client_id)
+function! langserver#client#get_last_request_id(client_id) abort
     return s:lsp_get_last_request_id(a:client_id)
 endfunction
 
-function! lsp#lspClient#is_error(notification)
+function! langserver#client#is_error(notification) abort
     return s:lsp_is_error(a:notification)
 endfunction
 
