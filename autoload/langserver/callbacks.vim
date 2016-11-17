@@ -40,6 +40,8 @@ function! langserver#callbacks#on_notification(id, data, event) abort
          call langserver#hover#callback(a:id, a:data, a:event)
       elseif l:last_topic ==? 'textDocument/didOpen'
          call langserver#documents#callback_did_open(a:id, a:data, a:event)
+       elseif l:last_topic ==? 'workspace/symbol'
+         call langserver#symbol#workspace#callback(a:id, a:data, a:event)
       else
          call langserver#log#log('warning', 'LAST REQUEST: ' . l:last_topic, v:true)
       endif
@@ -57,4 +59,21 @@ function! langserver#callbacks#on_notification(id, data, event) abort
          " call langserver#references#callback(a:data.request)
       endif
    endif
+endfunction
+
+function! langserver#callbacks#data(id, data, event) abort
+  call langserver#log#callback(a:id, a:data, a:event)
+
+  if type(a:data) != type({})
+    return ''
+  endif
+
+  if has_key(a:data, 'response')
+    let l:parsed_data = a:data['response']['result']
+  else
+    return ''
+  endif
+
+  let g:last_response = l:parsed_data
+  return l:parsed_data
 endfunction

@@ -1,22 +1,12 @@
 function! langserver#hover#callback(id, data, event) abort
-  call langserver#log#callback(a:id, a:data, a:event)
-
-  if type(a:data) != type({})
+  let l:parsed_data = langserver#callbacks#data(a:id, a:data, a:event)
+  if l:parsed_data == {}
     return
   endif
-
-  if has_key(a:data, 'response')
-    let l:parsed_data = a:data['response']['result']
-  else
-    return
-  endif
-
-  let g:last_response = l:parsed_data
-
 
   " {'data': {'textDocument/hover': {'range': {'end': {'character': 20, 'line': 44}, 'start': {'character': 9, 'line': 44}}, 'contents': [{'language': 'go', 'value': 'type LangHandler struct'}, {'language': 'markdown', 'value': 'LangHandler is a Go language server LSP/JSON-RPC handler.'}]}}, 'type': 'result'}
-  let l:range = a:data['response']['result']['range']
-  let l:data = a:data['response']['result']['contents']
+  let l:range = l:parsed_data['range']
+  let l:data = l:parsed_data['contents']
 
   call langserver#hover#display(l:range, l:data)
 endfunction
