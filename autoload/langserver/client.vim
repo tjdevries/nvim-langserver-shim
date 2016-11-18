@@ -60,6 +60,12 @@ function! s:_on_lsp_stdout(id, data, event) abort
                             call l:client.on_notifications[l:response_msg.id](a:id, l:on_notification_data, 'on_notification')
                         endif
                         call remove(l:client.on_notifications, l:response_msg.id)
+                    else
+                        echom string(l:client)
+                        let l:on_notification_data = {
+                                    \ 'request': l:response_msg,
+                                    \ }
+                        call l:client.opts.on_notification(a:id, l:on_notification_data, 'on_request')
                     endif
                     continue
                 else
@@ -128,8 +134,12 @@ function! s:lsp_send_request(id, opts) abort " opts = { method, params?, on_noti
     if has_key(s:lsp_clients, a:id)
         let l:client = s:lsp_clients[a:id]
 
-        let l:client.req_seq = l:client.req_seq + 1
-        let l:req_seq = l:client.req_seq
+        if has_key(a:opts, 'req_id')
+            let l:req_seq = a:opts.req_id
+        else
+            let l:client.req_seq = l:client.req_seq + 1
+            let l:req_seq = l:client.req_seq
+        endif
 
         let l:msg = { 'jsonrpc': '2.0', 'id': l:req_seq, 'method': a:opts.method }
         if has_key(a:opts, 'params')
@@ -148,6 +158,10 @@ function! s:lsp_send_request(id, opts) abort " opts = { method, params?, on_noti
             let l:client.opts.on_stderr = a:opts.on_stderr
         endif
 
+        call langserver#log#log('debug', printf('Sending request: %s, %s',
+                    \ a:id,
+                    \ string(l:msg)
+                    \ ))
         call langserver#job#send(l:client.id, l:req_data)
 
         return l:req_seq

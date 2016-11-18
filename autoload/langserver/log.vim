@@ -115,6 +115,17 @@ function! langserver#log#callback(id, data, event) abort
                \))
 endfunction
 
+""
+" Log a request from the server
+function! langserver#log#server_request(id, data, event) abort
+  call langserver#log#log('info',
+        \ printf('(%3s:%15s): %s',
+          \ a:id,
+          \ a:event,
+          \ string(a:data)
+          \ ))
+endfunction
+
 function! langserver#log#pretty_print(json_dict) abort
   " TODO: Get pretty printing of json dictionaries if possible
   let g:my_var = system([
