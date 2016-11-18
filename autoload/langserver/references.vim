@@ -8,7 +8,7 @@ function! langserver#references#transform_reply(message) abort
     let l:loc_bufnr = bufnr(langserver#util#get_filename(langserver#util#get_lsp_id(), l:location['uri']))
     let l:loc_filename = langserver#util#get_filename(langserver#util#get_lsp_id(), l:location['uri'])
     let l:loc_line = l:location['range']['start']['line'] + 1
-    let l:loc_text = bufnr('%') == l:loc_bufnr ? getline(l:loc_line) : ''
+    let l:loc_text = langserver#util#get_line(l:loc_bufnr, l:loc_filename, l:loc_line)
 
     let l:location_dict = {
           \ 'filename': l:loc_filename,

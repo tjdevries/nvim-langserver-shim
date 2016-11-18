@@ -39,7 +39,7 @@ let s:symbol_kind = {
       \ 17: 'Boolean',
       \ 18: 'Array',
       \ },
-      \ }
+    \ }
 
 
 function! langserver#symbol#util#transform_reply(message) abort

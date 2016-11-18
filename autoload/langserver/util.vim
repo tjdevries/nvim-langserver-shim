@@ -250,3 +250,13 @@ function! langserver#util#get_lsp_id() abort
     return -1
   endif
 endfunction
+
+function! langserver#util#get_line(loc_bufnr, loc_filename, loc_line) abort
+  if bufnr('%') == a:loc_bufnr 
+    let l:loc_text = getline(a:loc_line)
+  else
+    let l:loc_text = readfile(a:loc_filename, '', a:loc_line)[a:loc_line - 1]
+  endif
+
+  return l:loc_text
+endfunction
