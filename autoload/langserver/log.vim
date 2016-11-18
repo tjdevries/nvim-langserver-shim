@@ -56,6 +56,55 @@ function! langserver#log#log(level, message, ...) abort
 endfunction
 
 ""
+" Log response helper
+function! langserver#log#response(id, data, event) abort
+   let g:last_response = a:data
+
+   if type(a:data) != type({})
+     call langserver#log#log('debug',
+            \ printf('(%3s:%15s): %s',
+               \ a:id,
+               \ a:event,
+               \ string(a:data)
+               \ ),
+            \ langserver#util#debug(),
+            \ )
+     return
+   endif
+
+  if has_key(a:data, 'response')
+     call langserver#log#log('debug',
+              \ printf('(%3s:%15s): Response -> M(%20s), D(%s)',
+                 \ a:id,
+                 \ a:event,
+                 \ string(a:data.request.method),
+                 \ string(a:data.response.result),
+                 \ ),
+              \ langserver#util#debug(),
+              \ )
+   elseif has_key(a:data, 'request')
+     call langserver#log#log('debug',
+              \ printf('(%3s:%15s): Request  -> M(%20s), D(%s)',
+                 \ a:id,
+                 \ a:event,
+                 \ string(a:data.request.method),
+                 \ string(a:data.request.params),
+                 \ ),
+              \ langserver#util#debug(),
+              \ )
+   else
+     call langserver#log#log('debug',
+              \ printf('(%3s:%15s): Unknown  -> D(%s)',
+                 \ a:id,
+                 \ a:event,
+                 \ string(a:data),
+                 \ ),
+              \ langserver#util#debug(),
+              \ )
+   endif
+endfunction
+
+""
 " Log only at debug level
 function! langserver#log#callback(id, data, event) abort
    call langserver#log#log('debug',
@@ -64,4 +113,14 @@ function! langserver#log#callback(id, data, event) abort
                \ a:event,
                \ string(a:data)
                \))
+endfunction
+
+function! langserver#log#pretty_print(json_dict) abort
+  " TODO: Get pretty printing of json dictionaries if possible
+  let g:my_var = system([
+        \ 'echo',
+        \ shellescape(g:last_response[3]),
+        \ '|',
+        \ 'python', '-m', 'json.tool',
+        \ ])
 endfunction

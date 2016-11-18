@@ -238,7 +238,7 @@ function! langserver#util#parse_message(message) abort
 endfunction
 
 function! langserver#util#debug() abort
-  return v:true
+  return v:false
 endfunction
 
 function! langserver#util#get_lsp_id() abort

@@ -5,7 +5,12 @@ function! langserver#hover#callback(id, data, event) abort
   endif
 
   " {'data': {'textDocument/hover': {'range': {'end': {'character': 20, 'line': 44}, 'start': {'character': 9, 'line': 44}}, 'contents': [{'language': 'go', 'value': 'type LangHandler struct'}, {'language': 'markdown', 'value': 'LangHandler is a Go language server LSP/JSON-RPC handler.'}]}}, 'type': 'result'}
-  let l:range = l:parsed_data['range']
+  if has_key(l:parsed_data, 'range')
+    let l:range = l:parsed_data['range']
+  else
+    let l:range = {}
+  endif
+
   let l:data = l:parsed_data['contents']
 
   call langserver#hover#display(l:range, l:data)
@@ -19,8 +24,9 @@ function! langserver#hover#request() abort
 endfunction
 
 function! langserver#hover#display(range, data) abort
-  let s:my_last_highlight = matchaddpos('WarningMsg', langserver#highlight#matchaddpos_range(a:range))
-  redraw
+  if !empty(a:range)
+    let s:my_last_highlight = matchaddpos('WarningMsg', langserver#highlight#matchaddpos_range(a:range))
+  endif
 
   let l:hover_string = ''
   for l:explanation in a:data

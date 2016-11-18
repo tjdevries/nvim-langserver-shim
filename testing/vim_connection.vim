@@ -23,7 +23,7 @@ function! s:on_exit(id, status, event)
 endfunction
 
 function! s:on_notification(id, data, event)
-   if lsp#lspClient#is_error(a:data.response)
+   if langserver#client#is_error(a:data.response)
       echom 'lsp('.a:id.'):notification:notification error receieved for '.a:data.request.method
    else
       echom 'lsp('.a:id.'):notification:notification success receieved for '.a:data.request.method
@@ -35,7 +35,7 @@ function! s:on_notification1(id, data, event)
 endfunction
 
 " go get github.com/sourcegraph/go-langserver/langserver/cmd/langserver-go
-let g:lsp_id = lsp#lspClient#start({
+let g:lsp_id = langserver#client#start({
          \ 'cmd': [s:langserver_executabe, '-trace', '-logfile', expand('~/Desktop/langserver-go.log')],
          \ 'on_stderr': function('s:on_stderr'),
          \ 'on_exit': function('s:on_exit'),
@@ -44,7 +44,7 @@ let g:lsp_id = lsp#lspClient#start({
 
 if g:lsp_id > 0
    echom 'lsp server running'
-   call lsp#lspClient#send(g:lsp_id, {
+   call langserver#client#send(g:lsp_id, {
             \ 'method': 'initialize',
             \ 'params': {
                \ 'capabilities': {},
@@ -88,7 +88,7 @@ function! s:on_definition_request(id, data, event)
 endfunction
 
 function! SendDefinitionRequest() abort
-   call lsp#lspClient#send(g:lsp_id, {
+   call langserver#client#send(g:lsp_id, {
             \ 'method': 'textDocument/definition',
             \ 'params': {
                \ 'textDocument': langserver#util#get_text_document_identifier(s:langserver_name),
@@ -99,4 +99,4 @@ function! SendDefinitionRequest() abort
             \ })
 endfunction
 
-" call lsp#lspClient#stop(g:lsp_id)
+" call langserver#client#stop(g:lsp_id)

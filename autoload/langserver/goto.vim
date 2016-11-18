@@ -6,7 +6,11 @@ function! langserver#goto#callback(id, data, event) abort
   endif
 
   if has_key(a:data, 'response')
-    let l:parsed_data = a:data['response']['result'][0]
+    if type(a:data['response']['result']) == type([])
+      let l:parsed_data = a:data['response']['result'][0]
+    else
+      let l:parsed_data = a:data['response']['result']
+    endif
   else
     return
   endif

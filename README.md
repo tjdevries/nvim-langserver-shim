@@ -8,7 +8,10 @@ You will need to put this somewhere that is sourced on startup.
 
 ```vim
 let g:langserver_executables = {
-      \ 'go': ['langserver-go', '-trace', '-logfile', expand('~/Desktop/langserver-go.log')],
+      \ 'go': {
+        \ 'name': 'sourcegraph/langserver-go',
+        \ 'cmd': ['langserver-go', '-trace', '-logfile', expand('~/Desktop/langserver-go.log')],
+        \ },
       \ }
 ```
 
