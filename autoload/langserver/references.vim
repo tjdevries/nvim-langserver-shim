@@ -6,11 +6,12 @@ function! langserver#references#transform_reply(message) abort
   let l:location_list = []
   for l:location in a:message
     let l:loc_bufnr = bufnr(langserver#util#get_filename(langserver#util#get_lsp_id(), l:location['uri']))
+    let l:loc_filename = langserver#util#get_filename(langserver#util#get_lsp_id(), l:location['uri'])
     let l:loc_line = l:location['range']['start']['line'] + 1
     let l:loc_text = bufnr('%') == l:loc_bufnr ? getline(l:loc_line) : ''
 
     let l:location_dict = {
-          \ 'bufnr': l:loc_bufnr,
+          \ 'filename': l:loc_filename,
           \ 'lnum': l:loc_line,
           \ 'col': l:location['range']['start']['character'] + 1,
           \ 'text': l:loc_text,
@@ -53,15 +54,16 @@ function! langserver#references#request() abort
 endfunction
 
 function! langserver#references#display(loc_list) abort
-  if langserver#util#debug()
-    echo 'Displaying references'
-    echo string(a:loc_list)
-  endif
+  call langserver#log#log('debug', "Displaying references...\n" . string(a:loc_list))
 
   " TODO: Highlight the references, and turn them off somehow
   call setloclist(0,
         \ a:loc_list,
         \ 'r',
-        \ '[Location References]',
+        \ '[References]',
         \ )
+
+  if !empty(a:loc_list)
+    lwindow
+  endif
 endfunction

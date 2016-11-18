@@ -29,13 +29,19 @@ function! langserver#goto#callback(id, data, event) abort
   call langserver#goto#goto_defintion(a:id, l:parsed_data['uri'], l:parsed_data['range'], {})
 endfunction
 
-function! langserver#goto#request(name) abort
-  call langserver#client#send(a:name, {
+function! langserver#goto#request(...) abort
+  if a:0 > 0
+    let l:sever_name = a:1
+  else
+    let l:server_name = langserver#util#get_lsp_id()
+  endif
+
+  call langserver#client#send(l:server_name, {
         \ 'method': 'textDocument/definition',
         \ 'params': {
-          \ 'textDocument': langserver#util#get_text_document_identifier(a:name),
+          \ 'textDocument': langserver#util#get_text_document_identifier(l:server_name),
           \ 'position': langserver#util#get_position(),
-        \ },
+          \ },
         \ })
 endfunction
 

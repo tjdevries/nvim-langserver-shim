@@ -6,7 +6,8 @@ function! langserver#symbol#workspace#callback(id, data, event) abort
     return
   endif
 
-  call langserver#log#log('info', a:data, v:true)
+  let l:transformed = langserver#symbol#util#transform_reply(l:parsed_data) 
+  call langserver#symbol#workspace#display(l:transformed)
 endfunction
 
 function!langserver#symbol#workspace#request(...) abort
@@ -20,4 +21,10 @@ function!langserver#symbol#workspace#request(...) abort
             \ 'method': s:method,
             \ 'params': {'query': l:query}
             \ })
+endfunction
+
+function! langserver#symbol#workspace#display(loc_list) abort
+  call langserver#log#log('debug', string(a:loc_list))
+
+  call setqflist(a:loc_list)
 endfunction

@@ -1,7 +1,7 @@
 
 
 let g:langserver_configuration = {
-      \ 'json_rpc_version': "2.0",
+      \ 'json_rpc_version': '2.0',
       \ }
 
 
@@ -11,4 +11,13 @@ command! LSPStart call langserver#start({})
 " Open a text document, and alert the language server
 command! LSPOpen call langserver#didOpenTextDocument()
 
-nnoremap <leader>gd :call langserver#goto#request(langserver#util#get_lsp_id())<CR>
+" Request a goto
+command! LSPGoto call langserver#goto#request()
+
+" Request a hover
+command! LSPHover call langserver#hover#request()
+
+
+
+nnoremap <leader>gd :call langserver#goto#request()<CR>
+nnoremap <leader>gh :call langserver#hovoer#request()<CR>

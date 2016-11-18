@@ -34,5 +34,11 @@ Execute (Test parse of references):
   let test_message = '<-- result #25: textDocument/references: [{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":7,"character":22},"end":{"line":7,"character":28}}},{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":9,"character":4},"end":{"line":9,"character":10}}},{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":9,"character":39},"end":{"line":9,"character":45}}},{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":10,"character":16},"end":{"line":10,"character":22}}},{"uri":"file:///home/tj/go/src/github.com/sourcegraph/go-langserver/langserver/util.go","range":{"start":{"line":12,"character":13},"end":{"line":12,"character":19}}}]'
 
   let parsed = langserver#util#parse_message(test_message)
-  let transformed = langserver#references#transform_reply(parsed)
+  " let transformed = langserver#references#transform_reply(parsed)
+  " Log transformed
+
+Execute (Test parse of symbols):
+  let test_message = {'response': {'id': 6, 'result': [{'location': {'uri': 'file:///usr/local/go/src/os/path_plan9.go', 'range': {'end': {'character': 4, 'line': 7}, 'start': {'character': 0, 'line': 6}}}, 'name': 'PathSeparator', 'kind': 14, 'containerName': 'os'}, {'location': {'uri': 'file:///usr/local/go/src/os/path_unix.go', 'range': {'end': {'character': 4, 'line': 9}, 'start': {'character': 0, 'line': 8}}}, 'name': 'PathSeparator', 'kind': 14, 'containerName': 'os'}, {'location': {'uri': 'file:///usr/local/go/src/os/path_windows.go', 'range': {'end': {'character': 4, 'line': 7}, 'start': {'character': 0, 'line': 6}}}, 'name': 'PathSeparator', 'kind': 14, 'containerName': 'os'}], 'jsonrpc': '2.0'}, 'request': {'id': 6, 'jsonrpc': '2.0', 'method': 'workspace/symbol', 'params': {'query': 'PathSeparator'}}}
+
+  let transformed = langserver#symbol#util#transform_reply(test_message['response']['result'])
   Log transformed
