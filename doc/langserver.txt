@@ -25,6 +25,20 @@ Define a dictionary like this in your vimrc. >
 
 TODO: Mappings
 
+Plug Mappings:
+
+<Plug>(langserver_goto_request)
+    Send a textdocument/definition request
+    Sends you to the result
+
+<Plug>(langserver_hover_request)
+    Send a textdocument/hover request
+    Displays the result in the echo window
+
+<Plug>(langserver_textdocument_references_request)
+    Send a textdocument/references request
+    Displays the results in the loclist
+
 ================================================================================
 USAGE							*langserver-usage*
 
