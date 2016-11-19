@@ -17,7 +17,7 @@ command! LSPGoto call langserver#goto#request()
 " Request a hover
 command! LSPHover call langserver#hover#request()
 
-
-
-nnoremap <leader>gd :call langserver#goto#request()<CR>
-nnoremap <leader>gh :call langserver#hovoer#request()<CR>
+let s:mapping_options = get(g:, 'langserver_mapping_options', {})
+call langserver#mappings#default(s:mapping_options)
+nmap <leader>gd <Plug>(langserver_goto_request)
+nmap <leader>gh <Plug>(langserver_hover_request)
