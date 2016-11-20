@@ -3,11 +3,9 @@ function! langserver#callbacks#on_stdout(id, data, event) abort
 endfunction
 
 function! langserver#callbacks#on_stderr(id, data, event) abort
-  echom 'stderr ...'
   call langserver#log#response(a:id, a:data, a:event)
 
   echom string(a:data)
-  echom '...stderr'
 endfunction
 
 function! langserver#callbacks#on_exit(id, status, event) abort
