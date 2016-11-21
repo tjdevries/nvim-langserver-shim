@@ -20,7 +20,10 @@ CONFIGURATION						*langserver-configuration*
 Define a dictionary like this in your vimrc. >
 
     let g:langserver_executables = {
-	  \ 'go': ['langserver-go', '-trace', '-logfile', expand('~/Desktop/langserver-go.log')],
+	  \ 'go': {
+	    \ 'name': 'sourcegraph/langserver-go',
+	    \ 'cmd': ['langserver-go', '-trace', '-logfile', expand('~/Desktop/langserver-go.log')],
+	    \ },
 	  \ }
 
 TODO: Mappings
@@ -32,6 +35,11 @@ Begin with calling: >
 
     call langserver#start({})
 <
+
+or: >
+
+    :LSPStart
+>
 
 TODO: Opening a file
 TODO: Goto definition
