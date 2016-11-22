@@ -146,6 +146,10 @@ function! s:lsp_send_request(id, opts) abort " opts = { method, params?, on_noti
             let l:msg.params = a:opts.params
         endif
 
+        if has_key(a:opts, 'result')
+            let l:msg.result = a:opts.result
+        endif
+
         let l:json = json_encode(l:msg)
         let l:req_data = 'Content-Length: ' . len(l:json) . "\r\n\r\n" . l:json
 

@@ -112,7 +112,9 @@ function! langserver#log#callback(id, data, event) abort
                \ a:id,
                \ a:event,
                \ string(a:data)
-               \))
+               \ ),
+            \ v:false
+            \ )
 endfunction
 
 ""
