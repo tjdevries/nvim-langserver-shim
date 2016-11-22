@@ -1,0 +1,42 @@
+
+Given vim (Goto position):
+  let this = 'that'
+
+  " A comment here
+  " A comment there
+  " Here a comment, there a comment
+
+  " Everywhere a comment
+
+Do (Move):
+  2j
+
+Execute (Call goto):
+  let g:test_request = {
+    \ 'result': {
+      \ 'uri': 'file://' . expand('%'),
+      \ 'range': {
+        \ 'start': {'line': 0, 'character': 4},
+        \ 'end': {'line': 0, 'character': 8},
+      \ },
+    \ }}
+
+  Log g:test_request.result.uri
+
+  let cmd = langserver#api#textDocument#definition(g:test_request)
+  AssertEqual cmd, 'norm! 1G5|'
+
+" I Would like to use these but it doesn't seem to work.
+" Then (delete character):
+"   x
+
+" Expect (Line to be deleted):
+"   let his = 'that'
+
+"   " A comment here
+"   " A comment there
+"   " Here a comment, there a comment
+
+"   " Everywhere a comment
+
+

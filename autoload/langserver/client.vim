@@ -10,6 +10,17 @@ let s:lsp_text_document_sync_kind_incremental = 2
 
 function! s:_on_lsp_stdout(id, data, event) abort
     if has_key(s:lsp_clients, a:id)
+        " let s:lsp_clients[l:lsp_client_id] = {
+        "     \ 'id': l:lsp_client_id,
+        "     \ 'opts': a:opts,
+        "     \ 'req_seq': 0,
+        "     \ 'on_notifications': {},
+        "     \ 'stdout': {
+        "         \ 'max_buffer_size': l:max_buffer_size,
+        "         \ 'buffer': '',
+        "         \ 'next_token': s:lsp_token_type_contentlength,
+        "     \ },
+        " \ }
         let l:client = s:lsp_clients[a:id]
 
         let l:client.stdout.buffer .= join(a:data, "\n")

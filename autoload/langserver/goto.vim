@@ -83,8 +83,11 @@ function! langserver#goto#goto_defintion(name, uri, range_dict, options) abort
   "       \ a:range_dict['start']['line'] + 1,
   "       \ a:range_dict['start']['character'] + 1,
   "       \ )
-  execute(printf('norm! %sG%s|',
+  let l:action = printf('norm! %sG%s|',
         \ a:range_dict['start']['line'] + 1,
         \ a:range_dict['start']['character'] + 1,
-        \ ))
+        \ )
+  execute(l:action)
+
+  return l:action
 endfunction
