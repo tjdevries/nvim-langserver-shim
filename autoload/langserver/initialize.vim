@@ -30,6 +30,19 @@ function! langserver#initialize#get_client_capabilities() abort
   return {}
 endfunction
 
+function! langserver#initialize#callback(id, data, event) abort
+  if langserver#client#is_error(a:data.response)
+    call langserver#log#log('error', 
+          \ 'Could not connect to: ' . string(a:id) . "\n" .
+          \ 'Message was: ' . string(a:data),
+          \ v:true,
+          \ )
+  else
+    call langserver#initialize#response(a:id, a:data.response.result)
+    call langserver#log#log('info', 'Succesfully connected to: ' . string(a:id), v:true)
+  endif
+endfunction
+
 ""
 " Handle the response of the server.
 " This message details the capabilities of the language server.
@@ -47,7 +60,7 @@ function! langserver#initialize#response(name, response) abort
 
   if has_key(a:response, 'completionProvider')
     let l:complete_opt_resolve = get(a:response['completionProvider'], 'resolveProvider', v:false)
-    let l:complete_opt_trigger = get(a:resposne['completionProvider'], 'triggerCharacters', [])
+    let l:complete_opt_trigger = get(a:response['completionProvider'], 'triggerCharacters', [])
     call langserver#capabilities#set_completion_provider(a:name, l:complete_opt_resolve, l:complete_opt_trigger)
   endif
 

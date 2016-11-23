@@ -3,11 +3,7 @@ function! langserver#callbacks#on_stdout(id, data, event) abort
 endfunction
 
 function! langserver#callbacks#on_stderr(id, data, event) abort
-  echom 'stderr ...'
   call langserver#log#response(a:id, a:data, a:event)
-
-  echom string(a:data)
-  echom '...stderr'
 endfunction
 
 function! langserver#callbacks#on_exit(id, status, event) abort
@@ -31,14 +27,12 @@ function! langserver#callbacks#on_notification(id, data, event) abort
         call langserver#hover#callback(a:id, a:data, a:event)
       elseif l:last_topic ==? 'textDocument/didOpen'
         call langserver#documents#callback_did_open(a:id, a:data, a:event)
+      elseif l:last_topic ==? 'initialize'
+        call langserver#initialize#callback(a:id, a:data, a:event)
       elseif l:last_topic ==? 'workspace/symbol'
         call langserver#symbol#workspace#callback(a:id, a:data, a:event)
       else
-        " if langserver#extension#command#callback(a:id, a:data, a:event)
-        "   call langserver#log#log('debug', 'Handled: ' . l:last_topic)
-        " else
-          call langserver#log#log('warning', 'LAST REQUEST: ' . l:last_topic, v:true)
-        " endif
+        call langserver#log#log('warning', 'No callback registered for: ' . l:last_topic, v:true)
       endif
     elseif has_key(a:data, 'request')
       echom 'notification...'

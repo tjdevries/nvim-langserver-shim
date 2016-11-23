@@ -71,24 +71,24 @@ endfunction
 "   @key code TODO
 "   @key source TODO
 function! langserver#util#get_diagnostic(start, end, message, options) abort
-  let return_dict = {
+  let l:return_dict = {
         \ 'range': langserver#util#get_range(a:start, a:end),
         \ 'messsage': a:message
         \ }
 
   if has_key(a:options, 'severity')
-    let return_dict['severity'] = a:options['severity']
+    let l:return_dict['severity'] = a:options['severity']
   endif
 
   if has_key(a:options, 'code')
-    let return_dict['code'] = a:options['code']
+    let l:return_dict['code'] = a:options['code']
   endif
 
   if has_key(a:options, 'source')
-    let return_dict['source'] = a:options['source']
+    let l:return_dict['source'] = a:options['source']
   endif
 
-  return return_dict
+  return l:return_dict
 endfunction
 
 ""
@@ -103,13 +103,13 @@ endfunction
 " @param command (str): The identifier of the actual command handler
 " @param arguments (Optional[list]): Optional list of arguments passed to the command
 function! langserver#util#get_command(title, command, ...) abort
-  let return_dict = {
+  let l:return_dict = {
         \ 'title': a:title,
         \ 'command': a:command,
         \ }
 
   if a:0 > 1
-    let return_dict['arguments'] = a:1
+    let l:return_dict['arguments'] = a:1
   endif
 endfunction
 
@@ -137,7 +137,7 @@ endfunction
 " TODO: Figure out a better way to do this.
 " @param
 function! langserver#util#get_workspace_edit(uri, edit) abort
-  let my_dict = {
+  let l:my_dict = {
         \ 'uri': 'edit',
         \ }
 endfunction
@@ -209,36 +209,58 @@ endfunction
 " Parse the stdin of a server
 function! langserver#util#parse_message(message) abort
   if type(a:message) ==# type([])
-    let data = join(a:message, '')
+    let l:data = join(a:message, '')
   elseif type(a:message) ==# type('')
-    let data = a:message
+    let l:data = a:message
   else
   endif
 
-  let parsed = {}
-  if data =~? '--> request'
-    let parsed['type'] = 'request'
-  elseif data =~? '<-- result'
-    let parsed['type'] = 'result'
+  let l:parsed = {}
+  if l:data =~? '--> request'
+    let l:parsed['type'] = 'request'
+  elseif l:data =~? '<-- result'
+    let l:parsed['type'] = 'result'
   else
-    let parsed['type'] = 'info'
+    let l:parsed['type'] = 'info'
   endif
 
-  let data = substitute(data, '--> request #\w*: ', '', 'g')
-  let data = substitute(data, '<-- result #\w*: ', '', 'g')
+  let l:data = substitute(l:data, '--> request #\w*: ', '', 'g')
+  let l:data = substitute(l:data, '<-- result #\w*: ', '', 'g')
 
-  if parsed['type'] ==# 'request' || parsed['type'] ==# 'result'
-    let data = substitute(data, '^\(\S*\):', '"\1":', 'g')
-    let data = '{' . data . '}'
-    let data = json_decode(data)
+  if l:parsed['type'] ==# 'request' || l:parsed['type'] ==# 'result'
+    let l:data = substitute(l:data, '^\(\S*\):', '"\1":', 'g')
+    let l:data = '{' . l:data . '}'
+    let l:data = json_decode(l:data)
   endif
 
-  let parsed['data'] = data 
-  return parsed
+  let l:parsed['data'] = l:data 
+  return l:parsed
 endfunction
 
 function! langserver#util#debug() abort
   return v:false
+endfunction
+
+function! langserver#util#get_executable_key(...) abort
+  if a:0 > 0
+    let l:file_type = a:1
+  else
+    let l:file_type = &filetype
+  endif
+
+  if !exists('g:langserver_executables')
+    echoerr '`g:langserver_executables` was not defined'
+    return ''
+  endif
+
+  for l:k in keys(g:langserver_executables)
+    if index(split(l:k, ','), l:file_type) >= 0
+      return l:k
+    endif
+  endfor
+
+  echoerr 'Unsupported filetype: ' . l:file_type
+  return ''
 endfunction
 
 function! langserver#util#get_lsp_id() abort

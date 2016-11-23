@@ -8,8 +8,14 @@ function! langserver#goto#callback(id, data, event) abort
   if has_key(a:data, 'response')
     if type(a:data['response']['result']) == type([])
       let l:parsed_data = a:data['response']['result'][0]
-    else
-      let l:parsed_data = a:data['response']['result']
+    elseif type(a:data['response']['result']) == type({})
+      " Check if we have an empty dictionary
+      if empty(a:data['response']['result'])
+        call langserver#log#log('warning', 'No definition found for: ' . string(a:data['request']), v:true)
+        return
+      else
+        let l:parsed_data = a:data['response']['result']
+      endif
     endif
   else
     return
@@ -77,8 +83,11 @@ function! langserver#goto#goto_defintion(name, uri, range_dict, options) abort
   "       \ a:range_dict['start']['line'] + 1,
   "       \ a:range_dict['start']['character'] + 1,
   "       \ )
-  execute(printf('norm! %sG%s|',
+  let l:action = printf('norm! %sG%s|',
         \ a:range_dict['start']['line'] + 1,
         \ a:range_dict['start']['character'] + 1,
-        \ ))
+        \ )
+  execute(l:action)
+
+  return l:action
 endfunction

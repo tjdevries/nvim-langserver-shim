@@ -10,6 +10,17 @@ let s:lsp_text_document_sync_kind_incremental = 2
 
 function! s:_on_lsp_stdout(id, data, event) abort
     if has_key(s:lsp_clients, a:id)
+        " let s:lsp_clients[l:lsp_client_id] = {
+        "     \ 'id': l:lsp_client_id,
+        "     \ 'opts': a:opts,
+        "     \ 'req_seq': 0,
+        "     \ 'on_notifications': {},
+        "     \ 'stdout': {
+        "         \ 'max_buffer_size': l:max_buffer_size,
+        "         \ 'buffer': '',
+        "         \ 'next_token': s:lsp_token_type_contentlength,
+        "     \ },
+        " \ }
         let l:client = s:lsp_clients[a:id]
 
         let l:client.stdout.buffer .= join(a:data, "\n")
@@ -146,6 +157,10 @@ function! s:lsp_send_request(id, opts) abort " opts = { method, params?, on_noti
             let l:msg.params = a:opts.params
         endif
 
+        if has_key(a:opts, 'result')
+            let l:msg.result = a:opts.result
+        endif
+
         let l:json = json_encode(l:msg)
         let l:req_data = 'Content-Length: ' . len(l:json) . "\r\n\r\n" . l:json
 
@@ -175,6 +190,14 @@ function! s:lsp_get_last_request_id(id) abort
 endfunction
 
 function! s:lsp_is_error(notification) abort
+    " if type(a:notification) != type({})
+    "     return v:true
+    " endif
+
+    " if !has_key(a:notification, 'response') || !has_key(a:notification.response, 'result')
+    "     return v:true
+    " endif
+
     return has_key(a:notification, 'error')
 endfunction
 

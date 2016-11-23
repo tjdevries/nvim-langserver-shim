@@ -20,10 +20,9 @@ function! langserver#extension#command#callback(id, data, event) abort
 
   call langserver#client#send(a:id, {
         \ 'req_id': a:data.request.id,
-        \ 'method': 'fs/readFile',
-        \ 'params': {
-          \ 'result': l:response,
-          \ },
+        \ 'method': l:method,
+        \ 'params': a:data.request.params,
+        \ 'result': l:response,
         \ })
   return v:true
 endfunction

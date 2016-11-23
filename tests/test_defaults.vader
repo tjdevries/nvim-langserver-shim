@@ -1,0 +1,66 @@
+Execute (Testing executable configuration):
+  let g:__temp_exec = get(g:, 'langserver_executables', {})
+  let g:langserver_executables = {
+        \ 'go': {
+              \ 'name': 'sourcegraph/langserver-go',
+              \ 'cmd': ['langserver-go', '-trace', '-logfile', expand('~/Desktop/langserver-go.log')],
+              \ },
+        \ 'python': {
+              \ 'name': 'sourcegraph/python-langserver',
+              \ 'cmd': [expand('~/bin/python-langserver/python-langserver.py')],
+              \ },
+        \ 'javascript,typescript,jsx,tsx': {
+              \ 'name': 'javascript-typescript',
+              \ 'cmd': [],
+              \ },
+        \ }
+
+  AssertEqual 'javascript,typescript,jsx,tsx', langserver#util#get_executable_key('jsx')
+
+  let g:langserver_executables = g:__temp_exec
+
+
+Execute (Testing executable function as cmd):
+  let g:__temp_exec = get(g:, 'langserver_executables', {})
+
+  let g:__vader_test__global_var = 'not updated'
+  function! s:set_global_var() abort
+    let g:__vader_test__global_var = 'updated'
+    return ['executable', 'options']
+  endfunction
+
+  let g:langserver_executables = {
+        \ 'example': {
+              \ 'name': 'sourcegraph/langserver-go',
+              \ 'cmd': function('s:set_global_var'),
+              \ },
+        \ }
+
+  AssertEqual ['executable', 'options'], langserver#default#cmd('example')
+  AssertEqual g:__vader_test__global_var, 'updated'
+
+  let g:langserver_executables = g:__temp_exec
+
+
+Execute (Testing executable function as cmd with cs list):
+  let g:__temp_exec = get(g:, 'langserver_executables', {})
+
+  let g:__vader_test__global_var = 'not updated'
+  function! s:set_global_var() abort
+    let g:__vader_test__global_var = 'updated'
+    return ['executable', 'options']
+  endfunction
+
+  let g:langserver_executables = {
+        \ 'example,this,that,the_other': {
+              \ 'name': 'sourcegraph/langserver-go',
+              \ 'cmd': function('s:set_global_var'),
+              \ },
+        \ }
+
+  AssertEqual ['executable', 'options'], langserver#default#cmd('example')
+  AssertEqual g:__vader_test__global_var, 'updated'
+
+  let g:langserver_executables = g:__temp_exec
+
+

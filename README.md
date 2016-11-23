@@ -4,6 +4,14 @@ Shim for the language server protocol developed by Microsoft. The protocol can b
 
 ## Configuration
 
+First you need to install a language server. An example of installing one might be:
+
+```shell
+$ go get github.com/sourcegraph/go-langserver/langserver/cmd/langserver-go
+```
+
+A more complete set of language servers can be found here: https://github.com/Microsoft/language-server-protocol/wiki/Protocol-Implementations
+
 You will need to put this somewhere that is sourced on startup.
 
 ```vim
