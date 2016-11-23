@@ -31,9 +31,16 @@ function! langserver#initialize#get_client_capabilities() abort
 endfunction
 
 function! langserver#initialize#callback(id, data, event) abort
-  call langserver#initialize#response(a:id, a:data.response.result)
-
-  call langserver#log#log('info', 'Succesfully connected to: ' . string(a:id), v:true)
+  if langserver#client#is_error(a:data.response)
+    call langserver#log#log('error', 
+          \ 'Could not connect to: ' . string(a:id) . "\n" .
+          \ 'Message was: ' . string(a:data),
+          \ v:true,
+          \ )
+  else
+    call langserver#initialize#response(a:id, a:data.response.result)
+    call langserver#log#log('info', 'Succesfully connected to: ' . string(a:id), v:true)
+  endif
 endfunction
 
 ""

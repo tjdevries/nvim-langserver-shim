@@ -190,6 +190,14 @@ function! s:lsp_get_last_request_id(id) abort
 endfunction
 
 function! s:lsp_is_error(notification) abort
+    " if type(a:notification) != type({})
+    "     return v:true
+    " endif
+
+    " if !has_key(a:notification, 'response') || !has_key(a:notification.response, 'result')
+    "     return v:true
+    " endif
+
     return has_key(a:notification, 'error')
 endfunction
 

@@ -19,10 +19,18 @@ CONFIGURATION						*langserver-configuration*
 
 Define a dictionary like this in your vimrc. >
 
+    function! GetMyJSCommand() abort
+      return ['executable', 'options']
+    endfunction
+
     let g:langserver_executables = {
 	  \ 'go': {
 	    \ 'name': 'sourcegraph/langserver-go',
 	    \ 'cmd': ['langserver-go', '-trace', '-logfile', expand('~/Desktop/langserver-go.log')],
+	    \ },
+	  \ 'javascript,typescript': {
+	    \ 'name': 'myjsserver',
+	    \ 'cmd': function('GetMyJSCommand'),
 	    \ },
 	  \ }
 
