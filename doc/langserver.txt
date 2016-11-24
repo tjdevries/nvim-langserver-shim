@@ -34,6 +34,15 @@ Define a dictionary like this in your vimrc. >
 	    \ },
 	  \ }
 
+
+===== IN PROGRESS ===== ~
+
+In general, it is recommended that you name the server with the convention of
+{repository_host}/{repository_name}. There will be configuration defaults set
+for known language servers to try and ease the startup difficulty for users.
+
+==========~
+
 TODO: Mappings
 
 Plug Mappings:

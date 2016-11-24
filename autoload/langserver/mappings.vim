@@ -8,6 +8,6 @@ function! langserver#mappings#default(opts) abort
   nnoremap <silent> <Plug>(langserver_hover_request) :call langserver#hover#request()<CR>
 
   " Reference mappings
-  nnoremap <silent> <Plug>(langserver_textdocument_references) :call langserver#references#request()<CR>
+  nnoremap <silent> <Plug>(langserver_textdocument_references_request) :call langserver#references#request()<CR>
 endfunction
 
