@@ -13,7 +13,11 @@ let s:diagnostic_severity = {
 ""
 " Get a uri from a filename
 function! langserver#util#get_uri(name, filename) abort
-  return 'file://' . a:filename
+  if has('win32') || has('win64')
+    return 'file:///' . substitute(a:filename, '\', '/', 'g')
+  else
+    return 'file://' . a:filename
+  endif
 endfunction
 
 ""
