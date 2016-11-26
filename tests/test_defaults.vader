@@ -53,13 +53,31 @@ Execute (Testing executable function as cmd with cs list):
 
   let g:langserver_executables = {
         \ 'example,this,that,the_other': {
-              \ 'name': 'sourcegraph/langserver-go',
+              \ 'name': 'this/langserver',
               \ 'cmd': function('s:set_global_var'),
               \ },
         \ }
 
   AssertEqual ['executable', 'options'], langserver#default#cmd('example')
   AssertEqual g:__vader_test__global_var, 'updated'
+
+  let g:langserver_executables = g:__temp_exec
+
+Execute (Getting predefined settings):
+  " Pass
+
+Execute (Getting predefined functions and passing args):
+  let g:__temp_exec = get(g:, 'langserver_executables', {})
+
+  let g:langserver_executables = {
+        \ 'testing': {
+              \ 'name': 'test/test',
+              \ 'cmd': ['echo', '"hello"'],
+              \ },
+        \ }
+
+  let test_functions = langserver#default#extension_callbacks('testing')
+  AssertEqual 'tested foo!', call(test_functions['method_name'], [{'var': 'foo'}])
 
   let g:langserver_executables = g:__temp_exec
 
