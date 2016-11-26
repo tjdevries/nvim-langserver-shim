@@ -6,16 +6,15 @@ function! langserver#goto#callback(id, data, event) abort
   endif
 
   if has_key(a:data, 'response')
+    if empty(a:data['response']['result'])
+      call langserver#log#log('warning', 'No definition found for: ' . string(a:data['request']), v:true)
+      return
+    endif
+
     if type(a:data['response']['result']) == type([])
       let l:parsed_data = a:data['response']['result'][0]
     elseif type(a:data['response']['result']) == type({})
-      " Check if we have an empty dictionary
-      if empty(a:data['response']['result'])
-        call langserver#log#log('warning', 'No definition found for: ' . string(a:data['request']), v:true)
-        return
-      else
-        let l:parsed_data = a:data['response']['result']
-      endif
+      let l:parsed_data = a:data['response']['result']
     endif
   else
     return
