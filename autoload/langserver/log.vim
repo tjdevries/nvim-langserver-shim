@@ -110,10 +110,10 @@ endfunction
 function! langserver#log#callback(id, data, event) abort
   call langserver#log#log('debug',
         \ printf('(%3s:%15s): %s',
-        \ a:id,
-        \ a:event,
-        \ string(a:data)
-        \ ),
+          \ a:id,
+          \ a:event,
+          \ string(a:data)
+          \ ),
         \ v:false
         \ )
 endfunction

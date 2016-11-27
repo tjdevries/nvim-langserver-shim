@@ -1,3 +1,16 @@
+function! s:check_extra_callbacks(last_topic) abort
+  echom 'Checking custom callbacks'
+  let l:custom_callbacks = langserver#default#extension_callbacks()
+  echom 'Custom callbacks are: ' . string(l:custom_callbacks)
+  if has_key(l:custom_callbacks, a:last_topic)
+    call langserver#log#log('info', 'Calling custom callback for: ' . a:last_topic, v:true)
+    return l:custom_callbacks[a:last_topic]
+  else
+    call langserver#log#log('warning', 'No callback registered for: ' . a:last_topic, v:true)
+    return v:false
+  endif
+endfunction
+
 function! langserver#callbacks#on_stdout(id, data, event) abort
   echom 'LSP STDOUT(' . a:id . '): ' . string(a:data)
 endfunction
@@ -12,7 +25,15 @@ endfunction
 
 function! langserver#callbacks#on_notification(id, data, event) abort
   if a:event ==? 'on_request'
-    call langserver#extension#command#callback(a:id, a:data, a:event)
+    let l:last_topic = a:data['request']['method']
+
+    let l:ExtraCallbacks = s:check_extra_callbacks(l:last_topic)
+
+    if type(l:ExtraCallbacks) == type(function('tr'))
+      let l:result = call(l:ExtraCallbacks, [a:id, a:data, a:event])
+    else
+      call langserver#extension#command#callback(a:id, a:data, a:event)
+    endif
   elseif a:event ==? 'on_notification'
     if has_key(a:data, 'response')
       call langserver#log#response(a:id, a:data, a:event)
@@ -32,7 +53,12 @@ function! langserver#callbacks#on_notification(id, data, event) abort
       elseif l:last_topic ==? 'workspace/symbol'
         call langserver#symbol#workspace#callback(a:id, a:data, a:event)
       else
-        call langserver#log#log('warning', 'No callback registered for: ' . l:last_topic, v:true)
+        " Check if any extra callbacks exist.
+        let l:ExtraCallbacks = s:check_extra_callbacks(l:last_topic)
+
+        if type(l:ExtraCallbacks) == type(function('tr'))
+          let l:result = call(l:ExtraCallbacks, [a:id, a:data, a:event])
+        endif
       endif
     elseif has_key(a:data, 'request')
       echom 'notification...'
@@ -42,7 +68,8 @@ function! langserver#callbacks#on_notification(id, data, event) abort
 
     if langserver#client#is_error(a:data.response)
       call langserver#log#log('debug',
-            \ 'lsp('.a:id.'):notification:notification error receieved for '.a:data.request.method,
+            \ 'lsp('.a:id.'):notification:notification error receieved for '.a:data.request.method .
+            \ ': ' . string(a:data),
             \ v:true,
             \ )
     else

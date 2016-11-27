@@ -81,4 +81,17 @@ Execute (Getting predefined functions and passing args):
 
   let g:langserver_executables = g:__temp_exec
 
+Execute (Returns empty dictionary if unknown filetype):
+  let g:__temp_exec = get(g:, 'langserver_executables', {})
 
+  let g:langserver_executables = {
+        \ 'testing': {
+              \ 'name': 'test/test',
+              \ 'cmd': ['echo', '"hello"'],
+              \ },
+        \ }
+
+  let test_functions = langserver#default#extension_callbacks('foobar')
+  AssertEqual {}, test_functions
+
+  let g:langserver_executables = g:__temp_exec

@@ -34,11 +34,15 @@ function! langserver#default#cmd(...) abort
 endfunction
 
 function! langserver#default#extension_callbacks(...) abort
-  if a:0 > 0
-    let l:filetype_key = langserver#util#get_executable_key(a:1)
-  else
-    let l:filetype_key = langserver#util#get_executable_key(&filetype)
-  endif
+  try
+    if a:0 > 0
+      let l:filetype_key = langserver#util#get_executable_key(a:1)
+    else
+        let l:filetype_key = langserver#util#get_executable_key(&filetype)
+    endif
+  catch /.*Unsupported filetype.*/
+    return {}
+  endtry
 
   if has_key(g:langserver_executables, l:filetype_key)
     let l:location = s:preconfigured_location . g:langserver_executables[l:filetype_key]['name']
@@ -46,6 +50,7 @@ function! langserver#default#extension_callbacks(...) abort
     if isdirectory(l:location) && filereadable(l:file_to_source)
       execute('source ' . l:file_to_source)
       let l:subbed = substitute(g:langserver_executables[l:filetype_key]['name'], '/', '_', 'g')
+      let l:subbed = substitute(l:subbed, '-', '_', 'g')
       return Preconfigured_{l:subbed}()
     else
       return {}
