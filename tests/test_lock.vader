@@ -3,7 +3,7 @@ Execute (Test Lock):
 
   AssertEqual v:false, my_lock.locked
 
-  call my_lock.lock()
+  call my_lock.lock(1)
   AssertEqual v:true, my_lock.locked
 
   call my_lock.unlock()
@@ -11,5 +11,12 @@ Execute (Test Lock):
 
   AssertEqual -1, my_lock.get_id()
 
-  call my_lock.set_id(1)
+  call my_lock.lock(1)
   AssertEqual 1, my_lock.get_id()
+
+  let set_result = my_lock.lock(2)
+  AssertEqual v:false, set_result
+  AssertEqual 1, my_lock.get_id()
+
+  call my_lock.take_lock(2)
+  AssertEqual 2, my_lock.get_id()

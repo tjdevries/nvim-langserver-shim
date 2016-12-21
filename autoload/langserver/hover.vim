@@ -20,6 +20,9 @@ function! langserver#hover#request() abort
   return langserver#client#send(langserver#util#get_lsp_id(), {
         \ 'method': 'textDocument/hover',
         \ 'params': langserver#util#get_text_document_position_params(),
+        \ 'on_notification': {
+          \ 'callback': function('langserver#hover#callback'),
+          \ },
         \ })
 endfunction
 
@@ -38,7 +41,7 @@ function! langserver#hover#display(range, data) abort
 
   echo l:hover_string
 
-  return timer_start(5000, function('s:delete_highlight'))
+  return timer_start(3000, function('s:delete_highlight'))
 endfunction
 
 function! s:delete_highlight() abort

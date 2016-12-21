@@ -7,3 +7,7 @@ function! langserver#api#textDocument#definition(request) abort
         \ {},
         \ )
 endfunction
+
+function! langserver#api#textDocument#completion(request) abort
+
+endfunction
