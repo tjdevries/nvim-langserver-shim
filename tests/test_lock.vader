@@ -8,3 +8,8 @@ Execute (Test Lock):
 
   call my_lock.unlock()
   AssertEqual v:false, my_lock.locked
+
+  AssertEqual -1, my_lock.get_id()
+
+  call my_lock.set_id(1)
+  AssertEqual 1, my_lock.get_id()
