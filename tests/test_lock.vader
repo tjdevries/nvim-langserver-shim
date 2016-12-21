@@ -1,0 +1,10 @@
+Execute (Test Lock):
+  let my_lock = langserver#lock#semaphore()
+
+  AssertEqual v:false, my_lock.locked
+
+  call my_lock.lock()
+  AssertEqual v:true, my_lock.locked
+
+  call my_lock.unlock()
+  AssertEqual v:false, my_lock.locked
