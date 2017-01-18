@@ -1,4 +1,4 @@
-let s:lsp_clients = {} " { id, opts, req_seq, on_notifications: { request, on_notification }, stdout: { max_buffer_size, buffer, next_token, current_content_length, current_content_type } }
+let s:lsp_clients = {}
 let s:lsp_token_type_contentlength = 'content-length'
 let s:lsp_token_type_contenttype = 'content-type'
 let s:lsp_token_type_message = 'message'
@@ -14,11 +14,14 @@ function! s:_on_lsp_stdout(id, data, event) abort
         "     \ 'id': l:lsp_client_id,
         "     \ 'opts': a:opts,
         "     \ 'req_seq': 0,
-        "     \ 'on_notifications': {},
+        "     \ 'lock': langserver#lock#semaphore(),
+        "     \ 'request_notifications': {},
         "     \ 'stdout': {
         "         \ 'max_buffer_size': l:max_buffer_size,
         "         \ 'buffer': '',
         "         \ 'next_token': s:lsp_token_type_contentlength,
+        "         \ 'current_content_length': ,
+        "         \ 'current_content_type': ,
         "     \ },
         " \ }
         let l:client = s:lsp_clients[a:id]
@@ -126,6 +129,7 @@ function! s:lsp_start(opts) abort
         \ 'id': l:lsp_client_id,
         \ 'opts': a:opts,
         \ 'req_seq': 0,
+        \ 'lock': langserver#lock#semaphore(),
         \ 'on_notifications': {},
         \ 'stdout': {
             \ 'max_buffer_size': l:max_buffer_size,

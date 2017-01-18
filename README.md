@@ -23,6 +23,21 @@ let g:langserver_executables = {
       \ }
 ```
 
+To start the language server, run the command:
+
+```vim
+:LSPStart
+```
+
+After starting the language server, you should be able to run commands like:
+
+```vim
+:LSPGoto
+:LSPHover
+```
+
+and some more to come.
+
 More configuration to come...
 
 ## Plans
