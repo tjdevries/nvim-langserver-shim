@@ -144,6 +144,7 @@ endfunction
 function! s:lsp_send_request(id, opts) abort " opts = { method, params?, on_notification }
     if has_key(s:lsp_clients, a:id)
         let l:client = s:lsp_clients[a:id]
+        let l:type_of_msg = 'Request'
 
         if has_key(a:opts, 'req_id')
             let l:req_seq = a:opts.req_id
@@ -157,8 +158,16 @@ function! s:lsp_send_request(id, opts) abort " opts = { method, params?, on_noti
             let l:msg.params = a:opts.params
         endif
 
+        " I don't think you should be able to do these at the same time...
+        " Not going to do anything about that yet though
         if has_key(a:opts, 'result')
+            let l:type_of_msg = 'Response (result)'
             let l:msg.result = a:opts.result
+        endif
+
+        if has_key (a:opts, 'response')
+            let l:type_of_msg = 'Reponse (response)'
+            let l:msg.response = a:opts.response
         endif
 
         let l:json = json_encode(l:msg)
@@ -173,7 +182,8 @@ function! s:lsp_send_request(id, opts) abort " opts = { method, params?, on_noti
             let l:client.opts.on_stderr = a:opts.on_stderr
         endif
 
-        call langserver#log#log('debug', printf('Sending request: %s, %s',
+        call langserver#log#log('debug', printf('Sending %s: %s, %s',
+                    \ l:type_of_msg,
                     \ a:id,
                     \ string(l:msg)
                     \ ))
