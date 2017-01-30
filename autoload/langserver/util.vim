@@ -286,3 +286,11 @@ function! langserver#util#get_line(loc_bufnr, loc_filename, loc_line) abort
 
   return l:loc_text
 endfunction
+
+function! langserver#util#null_check(item)
+  if type(a:item) == type(v:null)
+    return v:true
+  else
+    return v:false
+  endif
+endfunction

@@ -1,5 +1,17 @@
 function! langserver#hover#callback(id, data, event) abort
   let l:parsed_data = langserver#callbacks#data(a:id, a:data, a:event)
+
+  if langserver#util#null_check(l:parsed_data)
+    call langserver#hover#display([], [
+          \ {
+            \ 'language': 'LSP',
+            \ 'value': 'Unable to retrieve hover information'
+            \ },
+            \ ],
+            \ )
+    return
+  endif
+
   if l:parsed_data == {}
     return
   endif
@@ -41,9 +53,13 @@ function! langserver#hover#display(range, data) abort
 
   echo l:hover_string
 
-  return timer_start(3000, function('s:delete_highlight'))
+  if !empty(a:range)
+    return timer_start(3000, function('s:delete_highlight'))
+  endif
 endfunction
 
-function! s:delete_highlight() abort
-  silent! call matchdelete(s:my_last_highlight)
+function! s:delete_highlight(timer_id) abort
+  if exists('s:my_last_highlight')
+    silent! call matchdelete(s:my_last_highlight)
+  endif
 endfunction

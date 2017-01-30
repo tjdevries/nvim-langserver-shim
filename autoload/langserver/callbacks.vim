@@ -83,17 +83,17 @@ endfunction
 
 function! langserver#callbacks#data(id, data, event) abort
   call langserver#log#callback(a:id, a:data, a:event)
+  let g:last_response = a:data
 
   if type(a:data) != type({})
-    return ''
+    return {}
   endif
 
   if has_key(a:data, 'response')
     let l:parsed_data = a:data['response']['result']
   else
-    return ''
+    return {}
   endif
 
-  let g:last_response = l:parsed_data
   return l:parsed_data
 endfunction
