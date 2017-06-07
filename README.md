@@ -1,5 +1,15 @@
 # nvim-langserver-shim
 
+# NOTICE
+
+Hi everyone, Thanks for all the support this plugin has received. If you like it, consider giving feedback and/or help, patches and review to https://github.com/neovim/neovim/pull/6856 , where I'll be working on incorporating this into Neovim.
+
+Once that is merged, I'll probably just delete everything inside the repository (you can go back in history if you'd like it :) ) and point to Neovim's documentation.
+
+Thanks
+
+## Old info
+
 Shim for the language server protocol developed by Microsoft. The protocol can be found here: https://github.com/Microsoft/language-server-protocol
 
 ## Configuration
